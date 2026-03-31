@@ -11,31 +11,36 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#E6F4FE"
       },
-      "predictiveBackGestureEnabled": false
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "package": "com.driansan.TKDCoachBOL"
     },
     "plugins": [
-  [
-    "expo-camera",
-    {
-      "cameraPermission": "Permitir que TKD Coach BOL use la cámara",
-      "microphonePermission": "Permitir que TKD Coach BOL use el micrófono",
-      "recordAudioAndroid": true
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.0.21"
+          }
+        }
+      ],
+      "expo-dev-client",
+      "expo-av",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permitir acceso a fotos y videos",
+          "cameraPermission": "Permitir acceso a la camara"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "db25b8ef-541a-4595-8205-f2116a27f988"
+      }
     }
-  ]
-]
-    
   }
 }

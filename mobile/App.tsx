@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
-import ScannerIntroScreen from './src/screens/ScannerIntroScreen';
-import CameraScreen from './src/screens/CameraScreen';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
-  const [screen, setScreen] = useState<'intro' | 'camera'>('intro');
-
-  if (screen === 'camera') {
-    return <CameraScreen onBack={() => setScreen('intro')} />;
-  }
-
-  return <ScannerIntroScreen onStart={() => setScreen('camera')} />;
+  return (
+    <NavigationContainer>
+      <AppNavigator />
+    </NavigationContainer>
+  );
 }
