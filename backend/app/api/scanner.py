@@ -1,56 +1,104 @@
-# backend/app/api/scanner.py
-
 import os
-import sys
-import json
-import shutil
+import cv2
 import tempfile
+import mediapipe as mp
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 
-# Apunta al módulo ai/ desde la raíz del proyecto
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
-AI_SRC = os.path.join(ROOT_DIR, "ai", "src")
-sys.path.insert(0, AI_SRC)
+router = APIRouter()
 
-from inference.evaluate_video import evaluate_video  # tu script existente
+POSE_CONNECTIONS = [
+    (0, 1), (1, 2), (2, 3), (3, 7),
+    (0, 4), (4, 5), (5, 6), (6, 8),
+    (9, 10),
+    (11, 12),
+    (11, 13), (13, 15), (15, 17), (15, 19), (15, 21), (17, 19),
+    (12, 14), (14, 16), (16, 18), (16, 20), (16, 22), (18, 20),
+    (11, 23), (12, 24), (23, 24),
+    (23, 25), (25, 27), (27, 29), (29, 31), (27, 31),
+    (24, 26), (26, 28), (28, 30), (30, 32), (28, 32),
+]
 
-router = APIRouter(prefix="/api/scanner", tags=["scanner"])
+
+@router.get("/health")
+def health():
+    return {"status": "healthy"}
 
 
 @router.post("/analyze")
 async def analyze_video(video: UploadFile = File(...)):
-    """
-    Recibe un video grabado desde el móvil,
-    corre MediaPipe + compare_sequences y devuelve el score.
-    """
-    # Validar extensión
-    if not video.filename.endswith((".mp4", ".mov", ".avi")):
-        raise HTTPException(status_code=400, detail="Formato de video no soportado")
+    suffix = os.path.splitext(video.filename or "video.mp4")[-1] or ".mp4"
 
-    # Guardar video en archivo temporal
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
-        shutil.copyfileobj(video.file, tmp)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        content = await video.read()
+        tmp.write(content)
         tmp_path = tmp.name
 
     try:
-        # Ruta del video de referencia
-        reference_path = os.path.join(ROOT_DIR, "ai", "data", "samples", "video_referencia.mp4")
-
-        # Correr evaluación
-        result = evaluate_video(tmp_path, reference_path)
-
-        return JSONResponse(content={
-            "success": True,
-            "score": result["score"],
-            "detalles": result.get("detalles", []),
-            "mensaje": result.get("mensaje", "")
-        })
-
+        result = _process_video(tmp_path)
+        return JSONResponse(content=result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error en análisis: {str(e)}")
-
+        raise HTTPException(status_code=500, detail=f"Error procesando video: {str(e)}")
     finally:
-        # Limpiar archivo temporal
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
+
+
+def _process_video(video_path: str) -> dict:
+    mp_pose = mp.solutions.pose
+    cap = cv2.VideoCapture(video_path)
+
+    if not cap.isOpened():
+        raise RuntimeError(f"No se pudo abrir el video: {video_path}")
+
+    fps    = cap.get(cv2.CAP_PROP_FPS) or 30.0
+    total  = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    width  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    print(f"[TKD] {width}x{height} | {fps:.1f} fps | ~{total} frames")
+
+    frames_data = []
+
+    with mp_pose.Pose(
+        static_image_mode=False,
+        model_complexity=1,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5,
+    ) as pose:
+        idx = 0
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            rgb     = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = pose.process(rgb)
+
+            keypoints = []
+            if results.pose_landmarks:
+                for lm in results.pose_landmarks.landmark:
+                    keypoints.append({
+                        "x":          round(lm.x, 5),
+                        "y":          round(lm.y, 5),
+                        "z":          round(lm.z, 5),
+                        "visibility": round(lm.visibility, 4),
+                    })
+
+            frames_data.append({"frame": idx, "keypoints": keypoints})
+            idx += 1
+
+            if idx % 30 == 0:
+                print(f"[TKD] {idx}/{total} frames...")
+
+    cap.release()
+    print(f"[TKD] Listo — {idx} frames procesados")
+
+    return {
+        "fps":          fps,
+        "total_frames": idx,
+        "width":        width,
+        "height":       height,
+        "connections":  [list(c) for c in POSE_CONNECTIONS],
+        "frames":       frames_data,
+    }
