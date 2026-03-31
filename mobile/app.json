@@ -35,7 +35,8 @@
           "photosPermission": "Permitir acceso a fotos y videos",
           "cameraPermission": "Permitir acceso a la camara"
         }
-      ]
+      ],
+      "expo-video"
     ],
     "extra": {
       "eas": {

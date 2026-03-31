@@ -13,7 +13,7 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 // ⚠️ Cambiá esta IP por la de tu PC
 // En PowerShell escribí: ipconfig
 // Buscá "Dirección IPv4" de tu red WiFi
-const BACKEND_URL = 'http://192.168.0.4:8000';
+const BACKEND_URL = 'http://127.0.0.1:8000';
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'UploadVideo'>;
 };
