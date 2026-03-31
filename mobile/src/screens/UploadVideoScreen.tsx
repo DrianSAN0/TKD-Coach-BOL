@@ -6,14 +6,13 @@ import {
 import { Video, ResizeMode } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
-// ⚠️ Cambiá esta IP por la de tu PC
-// En PowerShell escribí: ipconfig
-// Buscá "Dirección IPv4" de tu red WiFi
 const BACKEND_URL = 'http://127.0.0.1:8000';
+
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'UploadVideo'>;
 };
@@ -78,15 +77,22 @@ export default function UploadVideoScreen({ navigation }: Props) {
       if (!healthRes?.ok) {
         Alert.alert(
           'Backend no disponible',
-          `No se pudo conectar a ${BACKEND_URL}\n\nVerificá:\n• Que el servidor esté corriendo\n• Que estés en la misma red WiFi\n• Que la IP sea correcta`
+          `No se pudo conectar a ${BACKEND_URL}\n\nVerificá:\n• Que el servidor esté corriendo\n• Que el USB esté conectado\n• Que corriste adb reverse tcp:8000 tcp:8000`
         );
         return;
       }
 
+      // Primero copiamos el video a ubicación permanente
+      setUploadStatus('Preparando video...');
+      const filename = videoUri.split('/').pop() || 'video.mp4';
+      const permanentUri = FileSystem.documentDirectory + filename;
+      await FileSystem.copyAsync({ from: videoUri, to: permanentUri });
+
+      // Luego subimos la copia al backend
       setUploadStatus('Subiendo video...');
       const formData = new FormData();
       formData.append('video', {
-        uri: videoUri,
+        uri: permanentUri,
         name: 'video.mp4',
         type: 'video/mp4',
       } as any);
@@ -105,7 +111,7 @@ export default function UploadVideoScreen({ navigation }: Props) {
       setUploadStatus('Procesando con MediaPipe...');
       const analysisData = await response.json();
 
-      navigation.navigate('Analysis', { videoUri, analysisData });
+      navigation.navigate('Analysis', { videoUri: permanentUri, analysisData });
 
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Error desconocido');

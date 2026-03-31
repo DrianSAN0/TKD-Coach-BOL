@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
   Dimensions, StatusBar,
@@ -29,9 +29,13 @@ export default function AnalysisScreen({ navigation, route }: Props) {
   const videoRef = useRef<Video>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [videoSize, setVideoSize] = useState({ width: vidW || 1, height: vidH || 1 });
+  const [videoError, setVideoError] = useState<string | null>(null);
 
-  // Calcular tamaño del video manteniendo aspect ratio
-  const aspectRatio = vidW / vidH;
+  const safeWidth = videoSize.width || 1;
+  const safeHeight = videoSize.height || 1;
+  const aspectRatio = safeWidth / safeHeight;
   const videoAreaH = SCREEN_H * 0.62;
   let displayW = SCREEN_W;
   let displayH = SCREEN_W / aspectRatio;
@@ -39,6 +43,14 @@ export default function AnalysisScreen({ navigation, route }: Props) {
     displayH = videoAreaH;
     displayW = videoAreaH * aspectRatio;
   }
+
+  // Arrancar en el primer frame con detección
+  useEffect(() => {
+    const firstDetectedFrame = frames.findIndex(f => f.keypoints.length > 0);
+    if (firstDetectedFrame >= 0) {
+      setCurrentFrame(firstDetectedFrame);
+    }
+  }, [frames]);
 
   const onPlaybackStatusUpdate = useCallback(
     (status: AVPlaybackStatus) => {
@@ -73,7 +85,6 @@ export default function AnalysisScreen({ navigation, route }: Props) {
     <View style={s.container}>
       <StatusBar hidden />
 
-      {/* VIDEO + ESQUELETO */}
       <View style={s.videoArea}>
         <View style={[s.videoWrapper, { width: displayW, height: displayH }]}>
 
@@ -82,13 +93,40 @@ export default function AnalysisScreen({ navigation, route }: Props) {
             source={{ uri: videoUri }}
             style={StyleSheet.absoluteFill}
             resizeMode={ResizeMode.CONTAIN}
-            onPlaybackStatusUpdate={onPlaybackStatusUpdate}
             shouldPlay={false}
             isLooping
             useNativeControls={false}
+            progressUpdateIntervalMillis={33}
+            onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+            onLoad={async (status) => {
+  setIsLoaded(true);
+  if (videoRef.current) {
+    await videoRef.current.setPositionAsync(1);
+    await videoRef.current.pauseAsync();
+  }
+}}
+            onError={(e) => {
+              console.log('Video error:', e);
+              setVideoError(String(e));
+            }}
           />
 
-          {/* Esqueleto SVG encima del video */}
+          {/* Loading overlay */}
+          {!isLoaded && !videoError && (
+            <View style={s.centerOverlay}>
+              <Text style={s.overlayText}>Cargando video...</Text>
+            </View>
+          )}
+
+          {/* Error overlay */}
+          {videoError && (
+            <View style={s.centerOverlay}>
+              <Text style={s.overlayText}>Error al cargar el video</Text>
+              <Text style={s.overlaySubText}>{videoError}</Text>
+            </View>
+          )}
+
+          {/* Esqueleto SVG */}
           <View style={StyleSheet.absoluteFill} pointerEvents="none">
             <Svg width={displayW} height={displayH}>
               <G>
@@ -108,7 +146,6 @@ export default function AnalysisScreen({ navigation, route }: Props) {
                     />
                   );
                 })}
-
                 {keypoints.map((kp, idx) => {
                   if (kp.visibility < MIN_VISIBILITY) return null;
                   const cx = kp.x * displayW;
@@ -139,9 +176,7 @@ export default function AnalysisScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      {/* CONTROLES */}
       <SafeAreaView edges={['bottom']} style={s.controls}>
-
         <View style={s.statsRow}>
           {[
             { label: 'FPS',       value: fps.toFixed(0) },
@@ -187,7 +222,6 @@ export default function AnalysisScreen({ navigation, route }: Props) {
             <Text style={s.legendText}>Conexiones</Text>
           </View>
         </View>
-
       </SafeAreaView>
     </View>
   );
@@ -197,6 +231,9 @@ const s = StyleSheet.create({
   container:        { flex: 1, backgroundColor: '#000' },
   videoArea:        { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#000' },
   videoWrapper:     { position: 'relative', overflow: 'hidden', backgroundColor: '#000' },
+  centerOverlay:    { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center' },
+  overlayText:      { color: '#fff', fontSize: 16, fontWeight: '700' },
+  overlaySubText:   { color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 8, textAlign: 'center', paddingHorizontal: 20 },
   badge:            { position: 'absolute', top: 10, left: 10, flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
   badgeDot:         { width: 7, height: 7, borderRadius: 4 },
   badgeText:        { color: '#fff', fontSize: 11, fontWeight: '700' },
