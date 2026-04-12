@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   SafeAreaView, View, Text, StyleSheet,
-  TouchableOpacity,
+  TouchableOpacity, ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,7 +17,6 @@ export default function RankingScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={s.container}>
 
-      {/* ── Header ── */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={22} color={colors.primary} />
@@ -29,47 +28,45 @@ export default function RankingScreen({ navigation }: Props) {
         <Ionicons name="pencil-outline" size={22} color={colors.textSecondary} />
       </View>
 
-      {/* ── Poomsae ── */}
-      <View style={s.seccionCard}>
-        <View style={s.tabActivo}>
-          <Text style={s.tabActivoText}>Poomsae</Text>
-        </View>
-        <Text style={s.seleccionaLabel}>Selecciona tu género</Text>
-        <View style={s.opcionesCol}>
-          <View style={[s.opcionBtn, s.opcionDeshabilitado]}>
-            <Text style={s.opcionTextDes}>Femenino</Text>
-          </View>
-          <View style={[s.opcionBtn, s.opcionDeshabilitado]}>
-            <Text style={s.opcionTextDes}>Masculino</Text>
-          </View>
-          <View style={[s.opcionBtn, s.opcionDeshabilitado]}>
-            <Text style={s.opcionTextDes}>Pareja</Text>
-          </View>
-        </View>
-      </View>
+      <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
 
-      {/* ── Kyorugi ── */}
-      <View style={s.seccionCard}>
-        <View style={s.tabActivo}>
-          <Text style={s.tabActivoText}>Kyorugi</Text>
-        </View>
-        <Text style={s.seleccionaLabel}>Selecciona tu género</Text>
-        <View style={s.opcionesCol}>
-          <View style={[s.opcionBtn, s.opcionDeshabilitado]}>
-            <Text style={s.opcionTextDes}>Femenino</Text>
+        {/* ── Poomsae ── */}
+        <View style={s.seccionCard}>
+          <View style={s.tabActivo}>
+            <Text style={s.tabActivoText}>Poomsae</Text>
           </View>
-          <TouchableOpacity
-            style={[s.opcionBtn, s.opcionActivo]}
-            onPress={() => navigation.navigate('RankingPesos', {
-              categoria: 'Kyorugi',
-              genero: 'Masculino',
-            })}
-            activeOpacity={0.8}
-          >
-            <Text style={s.opcionTextActivo}>Masculino</Text>
-          </TouchableOpacity>
+          <Text style={s.seleccionaLabel}>Selecciona tu género</Text>
+          <View style={s.opcionesCol}>
+            {['Femenino', 'Masculino', 'Pareja'].map(g => (
+              <View key={g} style={[s.opcionBtn, s.opcionDeshabilitado]}>
+                <Text style={s.opcionTextDes}>{g}</Text>
+              </View>
+            ))}
+          </View>
         </View>
-      </View>
+
+        {/* ── Kyorugi ── */}
+        <View style={s.seccionCard}>
+          <View style={s.tabActivo}>
+            <Text style={s.tabActivoText}>Kyorugi</Text>
+          </View>
+          <Text style={s.seleccionaLabel}>Selecciona tu género</Text>
+          <View style={s.opcionesCol}>
+            <View style={[s.opcionBtn, s.opcionDeshabilitado]}>
+              <Text style={s.opcionTextDes}>Femenino</Text>
+            </View>
+            <TouchableOpacity
+              style={[s.opcionBtn, s.opcionActivo]}
+              onPress={() => navigation.navigate('RankingPesos', { categoria: 'Kyorugi', genero: 'Masculino' })}
+              activeOpacity={0.8}
+            >
+              <Text style={s.opcionTextActivo}>Masculino</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={{ height: 16 }} />
+      </ScrollView>
 
       <BottomNavBar />
     </SafeAreaView>
@@ -82,7 +79,8 @@ const s = StyleSheet.create({
   headerCenter:        { flex: 1, paddingHorizontal: 10 },
   title:               { color: colors.primary, fontSize: 20, fontWeight: '700' },
   subtitle:            { color: colors.textSecondary, fontSize: 12 },
-  seccionCard:         { backgroundColor: colors.cardDark, borderRadius: 16, marginHorizontal: 20, marginTop: 16, padding: 16, borderWidth: 1, borderColor: colors.border, gap: 12 },
+  scroll:              { flex: 1, paddingHorizontal: 20 },
+  seccionCard:         { backgroundColor: colors.cardDark, borderRadius: 16, marginTop: 16, padding: 16, borderWidth: 1, borderColor: colors.border, gap: 12 },
   tabActivo:           { backgroundColor: colors.primary, borderRadius: 20, paddingVertical: 6, paddingHorizontal: 18, alignSelf: 'flex-start' },
   tabActivoText:       { color: colors.white, fontSize: 14, fontWeight: '700' },
   seleccionaLabel:     { color: colors.white, fontSize: 14, fontWeight: '600', textAlign: 'center' },
