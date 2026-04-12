@@ -36,7 +36,8 @@
           "cameraPermission": "Permitir acceso a la camara"
         }
       ],
-      "expo-video"
+      "expo-video",
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
