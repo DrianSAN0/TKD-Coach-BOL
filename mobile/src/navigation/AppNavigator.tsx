@@ -8,6 +8,7 @@ import RankingScreen from '../screens/RankingScreen';
 import RankingPesosScreen from '../screens/RankingPesosScreen';
 import RankingTablaScreen from '../screens/RankingTablaScreen';
 import CalendarScreen from '../screens/CalendarScreen';
+import ScannerInicialScreen from '../screens/ScannerInicialScreen';
 
 export interface Keypoint {
   x: number; y: number; z: number; visibility: number;
@@ -22,8 +23,9 @@ export interface AnalysisData {
 
 export type RootStackParamList = {
   Home: undefined;
-  Calendar: undefined;
+  ScannerInicial: undefined;
   UploadVideo: undefined;
+  Calendar: undefined;
   Analysis: { videoUri: string; analysisData: AnalysisData; };
   Result: { score: number; stability: string; posture: string; framesCount: number; videoUri: string; };
   Ranking: undefined;
@@ -42,6 +44,7 @@ export default function AppNavigator() {
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="ScannerInicial" component={ScannerInicialScreen} />
       <Stack.Screen name="UploadVideo" component={UploadVideoScreen} />
       <Stack.Screen name="Analysis" component={AnalysisScreen} />
       <Stack.Screen name="Result" component={ResultScreen} />
