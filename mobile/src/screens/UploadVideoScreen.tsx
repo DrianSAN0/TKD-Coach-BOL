@@ -10,6 +10,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import BottomNavBar from '../components/BottomNavBar';
 
 const BACKEND_URL = 'http://127.0.0.1:8000';
 
@@ -82,13 +83,11 @@ export default function UploadVideoScreen({ navigation }: Props) {
         return;
       }
 
-      // Primero copiamos el video a ubicación permanente
       setUploadStatus('Preparando video...');
       const filename = videoUri.split('/').pop() || 'video.mp4';
       const permanentUri = FileSystem.documentDirectory + filename;
       await FileSystem.copyAsync({ from: videoUri, to: permanentUri });
 
-      // Luego subimos la copia al backend
       setUploadStatus('Subiendo video...');
       const formData = new FormData();
       formData.append('video', {
@@ -191,6 +190,8 @@ export default function UploadVideoScreen({ navigation }: Props) {
           <Text style={s.analyzeBtnText}>Analizar video</Text>
         </TouchableOpacity>
       )}
+
+      <BottomNavBar />
 
     </SafeAreaView>
   );
