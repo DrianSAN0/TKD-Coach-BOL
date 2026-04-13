@@ -1,169 +1,399 @@
 import React from 'react';
 import {
-  SafeAreaView, View, Text, StyleSheet,
-  TouchableOpacity, ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors } from '../theme/colors';
-import { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavBar from '../components/BottomNavBar';
 
-type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
-};
-
-export default function HomeScreen({ navigation }: Props) {
+export default function HomeScreen() {
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* HEADER */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <View style={styles.avatar}>
+                <Ionicons name="person-outline" size={24} color="#BDBDBD" />
+              </View>
 
-      {/* ── Header ── */}
-      <View style={s.header}>
-        <View style={s.avatarWrap}>
-          <View style={s.avatar}>
-            <Ionicons name="person" size={20} color={colors.textSecondary} />
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.headerTitle}>hola, Atleta</Text>
+                <Text style={styles.headerSubtitle}>¿Qué haremos hoy?</Text>
+              </View>
+            </View>
+
+            <View style={styles.headerRight}>
+              <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
+                <Ionicons name="menu" size={28} color="#FFFFFF" />
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
+                <Ionicons name="notifications-outline" size={26} color="#FFFFFF" />
+                <View style={styles.notificationDot} />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View>
-            <Text style={s.greeting}>hola, Atleta</Text>
-            <Text style={s.subGreeting}>¿Qué haremos hoy?</Text>
+
+          {/* NOTICIAS */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Noticias</Text>
+
+            <TouchableOpacity style={styles.newsCard} activeOpacity={0.85}>
+              <View style={styles.newsIconContainer}>
+                <Ionicons name="newspaper-outline" size={42} color="#E5E5E5" />
+              </View>
+
+              <View style={styles.newsContent}>
+                <Text style={styles.newsTitle}>
+                  Campeonato Nacional de Taekwondo 2026
+                </Text>
+                <Text style={styles.newsDescription}>
+                  Próximas fechas y categorías disponibles para inscripción.
+                </Text>
+                <Text style={styles.newsDate}>Abril 2026</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </View>
-        <View style={s.headerIcons}>
-          <Ionicons name="menu" size={22} color={colors.white} />
-          <View style={s.notifWrap}>
-            <Ionicons name="notifications-outline" size={22} color={colors.white} />
-            <View style={s.notifDot} />
+
+          {/* PROGRESO */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Progreso</Text>
+              <TouchableOpacity activeOpacity={0.7}>
+                <Text style={styles.seeMore}>Ver más</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.progressCard}>
+              <View style={styles.statsRow}>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>7.3</Text>
+                  <Text style={styles.statLabel}>Último score</Text>
+                </View>
+
+                <View style={styles.statDivider} />
+
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>12</Text>
+                  <Text style={styles.statLabel}>Análisis</Text>
+                </View>
+
+                <View style={styles.statDivider} />
+
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>98%</Text>
+                  <Text style={styles.statLabel}>Detección</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity style={styles.analysisButton} activeOpacity={0.85}>
+                <Ionicons name="scan-outline" size={22} color="#FFFFFF" />
+                <Text style={styles.analysisButtonText}>Nuevo análisis</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+
+          {/* CALENDARIO */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Calendario</Text>
+              <TouchableOpacity activeOpacity={0.7}>
+                <Text style={styles.seeMore}>Ver más</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.calendarCard}>
+              <TouchableOpacity style={styles.eventItem} activeOpacity={0.8}>
+                <View style={styles.dateBox}>
+                  <Text style={styles.dateDay}>15</Text>
+                  <Text style={styles.dateMonth}>ABR</Text>
+                </View>
+
+                <View style={styles.eventInfo}>
+                  <Text style={styles.eventTitle}>Entrenamiento Poomsae</Text>
+                  <Text style={styles.eventSubtitle}>Club Kundo Kwang · 18:00</Text>
+                </View>
+
+                <Ionicons name="chevron-forward" size={24} color="#BDBDBD" />
+              </TouchableOpacity>
+
+              <View style={styles.eventDivider} />
+
+              <TouchableOpacity style={styles.eventItem} activeOpacity={0.8}>
+                <View style={styles.dateBox}>
+                  <Text style={styles.dateDay}>20</Text>
+                  <Text style={styles.dateMonth}>ABR</Text>
+                </View>
+
+                <View style={styles.eventInfo}>
+                  <Text style={styles.eventTitle}>Torneo Regional</Text>
+                  <Text style={styles.eventSubtitle}>Coliseo Municipal · 09:00</Text>
+                </View>
+
+                <Ionicons name="chevron-forward" size={24} color="#BDBDBD" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+
+        <BottomNavBar />
       </View>
-
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
-
-        {/* ── Noticias ── */}
-        <View style={s.sectionHeader}>
-          <Text style={s.sectionTitle}>Noticias</Text>
-        </View>
-        <View style={s.newsCard}>
-          <View style={s.newsImagePlaceholder}>
-            <Ionicons name="newspaper-outline" size={36} color={colors.textSecondary} />
-          </View>
-          <View style={s.newsContent}>
-            <Text style={s.newsTitle}>Campeonato Nacional de Taekwondo 2026</Text>
-            <Text style={s.newsDesc}>Próximas fechas y categorías disponibles para inscripción.</Text>
-            <Text style={s.newsDate}>Abril 2026</Text>
-          </View>
-        </View>
-
-        {/* ── Progreso ── */}
-        <View style={s.sectionHeader}>
-          <Text style={s.sectionTitle}>Progreso</Text>
-          <TouchableOpacity>
-            <Text style={s.verMas}>Ver más</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={s.progresoCard}>
-          <View style={s.progresoRow}>
-            <View style={s.progresoItem}>
-              <Text style={s.progresoNum}>7.3</Text>
-              <Text style={s.progresoLabel}>Último score</Text>
-            </View>
-            <View style={s.progresoDivider} />
-            <View style={s.progresoItem}>
-              <Text style={s.progresoNum}>12</Text>
-              <Text style={s.progresoLabel}>Análisis</Text>
-            </View>
-            <View style={s.progresoDivider} />
-            <View style={s.progresoItem}>
-              <Text style={s.progresoNum}>98%</Text>
-              <Text style={s.progresoLabel}>Detección</Text>
-            </View>
-          </View>
-          <TouchableOpacity
-            style={s.scanBtn}
-            onPress={() => navigation.navigate('UploadVideo')}
-          >
-            <Ionicons name="scan-outline" size={20} color={colors.white} />
-            <Text style={s.scanBtnText}>Nuevo análisis</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* ── Calendario ── */}
-        <View style={s.sectionHeader}>
-          <Text style={s.sectionTitle}>Calendario</Text>
-          <TouchableOpacity>
-            <Text style={s.verMas}>Ver más</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={s.calCard}>
-          <View style={s.calItem}>
-            <View style={s.calDateBox}>
-              <Text style={s.calDay}>15</Text>
-              <Text style={s.calMonth}>ABR</Text>
-            </View>
-            <View style={s.calInfo}>
-              <Text style={s.calTitle}>Entrenamiento Poomsae</Text>
-              <Text style={s.calSub}>Club Kundo Kwang · 18:00</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
-          </View>
-          <View style={s.calDivider} />
-          <View style={s.calItem}>
-            <View style={s.calDateBox}>
-              <Text style={s.calDay}>20</Text>
-              <Text style={s.calMonth}>ABR</Text>
-            </View>
-            <View style={s.calInfo}>
-              <Text style={s.calTitle}>Torneo Regional</Text>
-              <Text style={s.calSub}>Coliseo Municipal · 09:00</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
-          </View>
-        </View>
-
-        <View style={{ height: 16 }} />
-      </ScrollView>
-
-      <BottomNavBar />
-
     </SafeAreaView>
   );
 }
 
-const s = StyleSheet.create({
-  container:            { flex: 1, backgroundColor: colors.background },
-  scroll:               { paddingHorizontal: 20, paddingTop: 8 },
-  header:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
-  avatarWrap:           { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  avatar:               { width: 40, height: 40, borderRadius: 20, backgroundColor: '#2A2A2A', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
-  greeting:             { color: colors.white, fontSize: 18, fontWeight: '700' },
-  subGreeting:          { color: colors.textSecondary, fontSize: 12 },
-  headerIcons:          { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  notifWrap:            { position: 'relative' },
-  notifDot:             { position: 'absolute', top: 0, right: 0, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
-  sectionHeader:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginBottom: 10 },
-  sectionTitle:         { color: colors.white, fontSize: 18, fontWeight: '700' },
-  verMas:               { color: colors.primary, fontSize: 13, fontWeight: '600' },
-  newsCard:             { backgroundColor: colors.cardDark, borderRadius: 16, flexDirection: 'row', overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
-  newsImagePlaceholder: { width: 90, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' },
-  newsContent:          { flex: 1, padding: 14, gap: 4 },
-  newsTitle:            { color: colors.white, fontSize: 14, fontWeight: '700', lineHeight: 20 },
-  newsDesc:             { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
-  newsDate:             { color: colors.primary, fontSize: 11, fontWeight: '600', marginTop: 4 },
-  progresoCard:         { backgroundColor: colors.cardDark, borderRadius: 16, padding: 18, borderWidth: 1, borderColor: colors.border, gap: 16 },
-  progresoRow:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' },
-  progresoItem:         { alignItems: 'center', gap: 4 },
-  progresoNum:          { color: colors.white, fontSize: 26, fontWeight: '700' },
-  progresoLabel:        { color: colors.textSecondary, fontSize: 11 },
-  progresoDivider:      { width: 1, height: 40, backgroundColor: colors.border },
-  scanBtn:              { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  scanBtnText:          { color: colors.white, fontSize: 15, fontWeight: '700' },
-  calCard:              { backgroundColor: colors.cardDark, borderRadius: 16, borderWidth: 1, borderColor: colors.border, overflow: 'hidden' },
-  calItem:              { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12 },
-  calDateBox:           { width: 44, height: 44, backgroundColor: colors.primary, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  calDay:               { color: colors.white, fontSize: 16, fontWeight: '700', lineHeight: 18 },
-  calMonth:             { color: 'rgba(255,255,255,0.8)', fontSize: 9, fontWeight: '600' },
-  calInfo:              { flex: 1, gap: 3 },
-  calTitle:             { color: colors.white, fontSize: 14, fontWeight: '600' },
-  calSub:               { color: colors.textSecondary, fontSize: 12 },
-  calDivider:           { height: 1, backgroundColor: colors.border, marginHorizontal: 14 },
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: '#0D0D0D',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#0D0D0D',
+  },
+  scrollContent: {
+    paddingTop: 6,
+    paddingHorizontal: 18,
+    paddingBottom: 20,
+  },
+
+  header: {
+    width: '100%',
+    minHeight: 72,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 26,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    paddingRight: 12,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#232323',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  headerTextContainer: {
+    flexShrink: 1,
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    textTransform: 'none',
+  },
+  headerSubtitle: {
+    color: '#9A9A9A',
+    fontSize: 14,
+    marginTop: 2,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+    position: 'relative',
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
+    backgroundColor: '#E93735',
+  },
+
+  section: {
+    marginBottom: 26,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  sectionTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 14,
+  },
+  seeMore: {
+    color: '#E93735',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  newsCard: {
+    width: '100%',
+    backgroundColor: '#1F1F1F',
+    borderRadius: 22,
+    flexDirection: 'row',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  newsIconContainer: {
+    width: 110,
+    minHeight: 150,
+    backgroundColor: '#2A2A2A',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  newsContent: {
+    flex: 1,
+    paddingVertical: 22,
+    paddingHorizontal: 18,
+    justifyContent: 'center',
+  },
+  newsTitle: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '700',
+    lineHeight: 24,
+    marginBottom: 10,
+  },
+  newsDescription: {
+    color: '#C6C6C6',
+    fontSize: 13.5,
+    lineHeight: 21,
+    marginBottom: 16,
+  },
+  newsDate: {
+    color: '#E93735',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+
+  progressCard: {
+    width: '100%',
+    backgroundColor: '#1F1F1F',
+    borderRadius: 22,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 22,
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statDivider: {
+    width: 1,
+    height: 54,
+    backgroundColor: '#343434',
+  },
+  statValue: {
+    color: '#FFFFFF',
+    fontSize: 26,
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  statLabel: {
+    color: '#B8B8B8',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  analysisButton: {
+    height: 58,
+    borderRadius: 16,
+    backgroundColor: '#E93735',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  analysisButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    marginLeft: 10,
+  },
+
+  calendarCard: {
+    width: '100%',
+    backgroundColor: '#1F1F1F',
+    borderRadius: 22,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  eventItem: {
+    minHeight: 88,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dateBox: {
+    width: 58,
+    height: 58,
+    borderRadius: 16,
+    backgroundColor: '#E93735',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  dateDay: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: '800',
+    lineHeight: 22,
+  },
+  dateMonth: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  eventInfo: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingRight: 10,
+  },
+  eventTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  eventSubtitle: {
+    color: '#B8B8B8',
+    fontSize: 13.5,
+  },
+  eventDivider: {
+    height: 1,
+    backgroundColor: '#2F2F2F',
+    marginLeft: 72,
+  },
 });
