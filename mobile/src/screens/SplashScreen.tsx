@@ -42,7 +42,7 @@ export default function SplashScreen({ navigation }: Props) {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      navigation.replace('Home');
+      navigation.replace('Login');
     });
   }, []);
 
