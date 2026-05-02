@@ -1,5 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SplashScreen from '../screens/SplashScreen';
 import HomeScreen from '../screens/HomeScreen';
 import UploadVideoScreen from '../screens/UploadVideoScreen';
 import AnalysisScreen from '../screens/AnalysisScreen';
@@ -22,6 +23,7 @@ export interface AnalysisData {
 }
 
 export type RootStackParamList = {
+  Splash: undefined;
   Home: undefined;
   ScannerInicial: undefined;
   UploadVideo: undefined;
@@ -41,8 +43,10 @@ export default function AppNavigator() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: '#0D0D0D' },
+        animation: 'fade',
       }}
     >
+      <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="ScannerInicial" component={ScannerInicialScreen} />
       <Stack.Screen name="UploadVideo" component={UploadVideoScreen} />

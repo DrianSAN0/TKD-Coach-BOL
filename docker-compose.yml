@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: tkd-postgres
+    environment:
+      POSTGRES_DB: tkd_coach_bol
+      POSTGRES_USER: tkduser
+      POSTGRES_PASSWORD: tkd1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
