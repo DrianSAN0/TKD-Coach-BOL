@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView, View, Text, StyleSheet,
-  ScrollView, TouchableOpacity,
+  ScrollView, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -10,28 +10,21 @@ import { colors } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavBar from '../components/BottomNavBar';
 
+const BACKEND_URL = 'http://127.0.0.1:8000';
+
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'RankingTabla'>;
   route: RouteProp<RootStackParamList, 'RankingTabla'>;
 };
 
-const COMPETIDORES = [
-  { pos: 1,  nombre: 'Lucas Javier Guzmán Rojas',       puntaje: 97 },
-  { pos: 2,  nombre: 'Juan Carlos Pérez Rodríguez',      puntaje: 93 },
-  { pos: 3,  nombre: 'Luis Fernando Gómez Castillo',     puntaje: 90 },
-  { pos: 4,  nombre: 'José Antonio Vargas López',        puntaje: 85 },
-  { pos: 5,  nombre: 'Miguel Ángel Torres Rojas',        puntaje: 80 },
-  { pos: 6,  nombre: 'Lucas Javier Guzmán Rojas',        puntaje: 77 },
-  { pos: 7,  nombre: 'Mateo Adrian Costa Rivera',        puntaje: 75 },
-  { pos: 8,  nombre: 'Carlos Alberto Mendoza Flores',    puntaje: 71 },
-  { pos: 9,  nombre: 'Andrés Felipe Herrera Sánchez',    puntaje: 65 },
-  { pos: 10, nombre: 'Diego Alejandro Cruz Morales',     puntaje: 62 },
-  { pos: 11, nombre: 'Pablo Sebastián Ortiz Gutiérrez',  puntaje: 58 },
-  { pos: 12, nombre: 'Ricardo Daniel Chávez Navarro',    puntaje: 55 },
-  { pos: 13, nombre: 'Jorge Eduardo Ramírez Silva',      puntaje: 50 },
-  { pos: 14, nombre: 'Fernando Javier Castro Paredes',   puntaje: 47 },
-  { pos: 15, nombre: 'Mario Andrés Salazar Vega',        puntaje: 43 },
-];
+type Competidor = {
+  posicion:          number;
+  nombre:            string;
+  apellido:          string;
+  club:              string | null;
+  categoria:         string | null;
+  puntaje_acumulado: number;
+};
 
 const medalColor = (pos: number) => {
   if (pos === 1) return '#FFD700';
@@ -42,6 +35,27 @@ const medalColor = (pos: number) => {
 
 export default function RankingTablaScreen({ navigation, route }: Props) {
   const { categoria, genero, peso } = route.params;
+  const [competidores, setCompetidores] = useState<Competidor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchRanking();
+  }, []);
+
+  const fetchRanking = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${BACKEND_URL}/ranking/?categoria=${categoria}`);
+      if (!res.ok) throw new Error('Error al cargar ranking');
+      const data = await res.json();
+      setCompetidores(data);
+    } catch (e: any) {
+      setError('No se pudo cargar el ranking');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={s.container}>
@@ -55,32 +69,53 @@ export default function RankingTablaScreen({ navigation, route }: Props) {
           <Text style={s.title}>Ranking Nacional</Text>
           <Text style={s.subtitle}>{categoria} · {genero} · {peso}</Text>
         </View>
-        <Ionicons name="pencil-outline" size={22} color={colors.textSecondary} />
+        <TouchableOpacity onPress={fetchRanking}>
+          <Ionicons name="refresh-outline" size={22} color={colors.textSecondary} />
+        </TouchableOpacity>
       </View>
 
       {/* ── Tabla ── */}
       <View style={s.tableHeader}>
         <Text style={[s.colHeader, { width: 50, textAlign: 'center' }]}>Pos.</Text>
         <Text style={[s.colHeader, { flex: 1 }]}>Nombre</Text>
-        <Text style={[s.colHeader, { width: 70, textAlign: 'center' }]}>Score</Text>
+        <Text style={[s.colHeader, { width: 80, textAlign: 'center' }]}>Club</Text>
+        <Text style={[s.colHeader, { width: 60, textAlign: 'center' }]}>Score</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={s.scroll}>
-        {COMPETIDORES.map((c, i) => (
-          <View key={i} style={[s.fila, i % 2 === 0 && s.filaAlterna]}>
-            <Text style={[s.posText, { width: 50, textAlign: 'center', color: medalColor(c.pos) }]}>
-              {c.pos}
-            </Text>
-            <Text style={[s.nombreText, { flex: 1 }]} numberOfLines={1}>
-              {c.nombre}
-            </Text>
-            <Text style={[s.puntajeText, { width: 70, textAlign: 'center' }]}>
-              {c.puntaje}
-            </Text>
-          </View>
-        ))}
-        <View style={{ height: 16 }} />
-      </ScrollView>
+      {loading ? (
+        <View style={s.center}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={s.loadingText}>Cargando ranking...</Text>
+        </View>
+      ) : error ? (
+        <View style={s.center}>
+          <Ionicons name="alert-circle-outline" size={40} color={colors.primary} />
+          <Text style={s.errorText}>{error}</Text>
+          <TouchableOpacity style={s.retryBtn} onPress={fetchRanking}>
+            <Text style={s.retryText}>Reintentar</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false} style={s.scroll}>
+          {competidores.map((c, i) => (
+            <View key={i} style={[s.fila, i % 2 === 0 && s.filaAlterna]}>
+              <Text style={[s.posText, { width: 50, textAlign: 'center', color: medalColor(c.posicion) }]}>
+                {c.posicion}
+              </Text>
+              <Text style={[s.nombreText, { flex: 1 }]} numberOfLines={1}>
+                {c.nombre} {c.apellido}
+              </Text>
+              <Text style={[s.clubText, { width: 80 }]} numberOfLines={1}>
+                {c.club || '-'}
+              </Text>
+              <Text style={[s.puntajeText, { width: 60, textAlign: 'center' }]}>
+                {c.puntaje_acumulado}
+              </Text>
+            </View>
+          ))}
+          <View style={{ height: 16 }} />
+        </ScrollView>
+      )}
 
       <BottomNavBar />
     </SafeAreaView>
@@ -100,5 +135,11 @@ const s = StyleSheet.create({
   filaAlterna:  { backgroundColor: '#222222' },
   posText:      { fontSize: 14, fontWeight: '700' },
   nombreText:   { color: colors.white, fontSize: 13, paddingRight: 4 },
+  clubText:     { color: colors.textSecondary, fontSize: 11, textAlign: 'center' },
   puntajeText:  { color: colors.white, fontSize: 14, fontWeight: '700' },
+  center:       { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
+  loadingText:  { color: colors.textSecondary, fontSize: 14 },
+  errorText:    { color: colors.textSecondary, fontSize: 14, textAlign: 'center' },
+  retryBtn:     { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 10, paddingHorizontal: 24 },
+  retryText:    { color: colors.white, fontSize: 14, fontWeight: '700' },
 });
