@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import scanner
 from app.api import ranking
 from app.api import auth
+from app.api import competidores
 from app.core.database import engine
 from app.models import models
 
@@ -20,6 +21,7 @@ app.add_middleware(
 app.include_router(scanner.router)
 app.include_router(ranking.router)
 app.include_router(auth.router)
+app.include_router(competidores.router)
 
 @app.get("/health")
 def health():

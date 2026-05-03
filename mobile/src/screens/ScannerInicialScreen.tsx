@@ -86,7 +86,7 @@ export default function ScannerInicialScreen({ navigation }: Props) {
         {/* ── Botón ── */}
         <TouchableOpacity
           style={s.btn}
-          onPress={() => navigation.navigate('UploadVideo')}
+          onPress={() => navigation.navigate('ListaPoomsae')}
           activeOpacity={0.85}
         >
           <Ionicons name="scan-outline" size={22} color={colors.white} />
