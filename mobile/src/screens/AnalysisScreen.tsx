@@ -197,20 +197,33 @@ export default function AnalysisScreen({ navigation, route }: Props) {
         </View>
 
         <View style={s.btnRow}>
-          <TouchableOpacity style={s.sideBtn} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
-            <Text style={s.sideBtnText}>Volver</Text>
-          </TouchableOpacity>
+  <TouchableOpacity style={s.sideBtn} onPress={() => navigation.goBack()}>
+    <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
+    <Text style={s.sideBtnText}>Volver</Text>
+  </TouchableOpacity>
 
-          <TouchableOpacity style={s.playBtn} onPress={togglePlay}>
-            <Ionicons name={isPlaying ? 'pause' : 'play'} size={28} color={colors.white} />
-          </TouchableOpacity>
+  <TouchableOpacity style={s.playBtn} onPress={togglePlay}>
+    <Ionicons name={isPlaying ? 'pause' : 'play'} size={28} color={colors.white} />
+  </TouchableOpacity>
 
-          <TouchableOpacity style={s.sideBtn} onPress={restart}>
-            <Ionicons name="refresh" size={20} color={colors.textSecondary} />
-            <Text style={s.sideBtnText}>Reiniciar</Text>
-          </TouchableOpacity>
-        </View>
+  <TouchableOpacity style={s.sideBtn} onPress={restart}>
+    <Ionicons name="refresh" size={20} color={colors.textSecondary} />
+    <Text style={s.sideBtnText}>Reiniciar</Text>
+  </TouchableOpacity>
+</View>
+
+{/* Botón Siguiente */}
+<TouchableOpacity
+  style={s.siguienteBtn}
+  onPress={() => navigation.navigate('Felicidades', {
+    score: detectionRate / 10,
+    poomsae: route.params.poomsae,
+    framesCount: frames.length,
+  })}
+>
+  <Text style={s.siguienteBtnText}>Siguiente</Text>
+  <Ionicons name="arrow-forward" size={20} color="#fff" />
+</TouchableOpacity>
 
         <View style={s.legend}>
           <View style={s.legendItem}>
@@ -254,4 +267,6 @@ const s = StyleSheet.create({
   legendDot:        { width: 9, height: 9, borderRadius: 5 },
   legendLine:       { width: 16, height: 2.5, borderRadius: 2 },
   legendText:       { color: colors.textSecondary, fontSize: 11 },
+  siguienteBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#E93735', borderRadius: 30, paddingVertical: 12, marginTop: 8, marginBottom: 4 },
+siguienteBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
 });
