@@ -6,10 +6,10 @@ from app.api import auth
 from app.api import competidores
 from app.api import eventos
 from app.api import resultados
+from app.api import dynamodb
 from app.core.database import engine
 from app.models import models
-from app.api import dynamodb
-app.include_router(dynamodb.router)
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="TKD Coach BO API")
@@ -27,6 +27,7 @@ app.include_router(auth.router)
 app.include_router(competidores.router)
 app.include_router(eventos.router)
 app.include_router(resultados.router)
+app.include_router(dynamodb.router)
 
 @app.get("/health")
 def health():
