@@ -8,7 +8,8 @@ from app.api import eventos
 from app.api import resultados
 from app.core.database import engine
 from app.models import models
-
+from app.api import dynamodb
+app.include_router(dynamodb.router)
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="TKD Coach BO API")
