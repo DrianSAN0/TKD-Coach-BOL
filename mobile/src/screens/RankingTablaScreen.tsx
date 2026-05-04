@@ -10,7 +10,7 @@ import { colors } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavBar from '../components/BottomNavBar';
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+import { BACKEND_URL } from '../config';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'RankingTabla'>;
