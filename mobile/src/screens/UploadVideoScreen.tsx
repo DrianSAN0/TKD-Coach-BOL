@@ -64,43 +64,22 @@ export default function UploadVideoScreen({ navigation }: Props) {
     }
   };
 
-  const analizarVideo = async () => {
+const analizarVideo = async () => {
     if (!videoUri) return;
     setLoading(true);
     try {
-      setUploadStatus('Conectando al servidor...');
-      const healthRes = await fetch(`${BACKEND_URL}/health`).catch(() => null);
-      if (!healthRes?.ok) {
-        Alert.alert('Backend no disponible', `No se pudo conectar a ${BACKEND_URL}`);
-        return;
-      }
-
-      // 1. Copiar video a directorio permanente
       setUploadStatus('Preparando video...');
       const filename = videoUri.split('/').pop() || 'video.mp4';
       const permanentUri = FileSystem.documentDirectory + filename;
       await FileSystem.copyAsync({ from: videoUri, to: permanentUri });
 
-      // 2. Subir video directo al EC2
-      setUploadStatus('Subiendo video...');
+      setUploadStatus('Analizando con MediaPipe...');
       const formData = new FormData();
       formData.append('video', { uri: permanentUri, name: 'video.mp4', type: 'video/mp4' } as any);
-      formData.append('id_atleta', 'atleta');
-      formData.append('poomsae', 'Koryo');
 
-      const s3Res = await fetch(`http://3.144.245.237:8000/s3/upload-video`, {
+      const response = await fetch(`http://3.144.245.237:8000/analyze`, {
         method: 'POST',
         body: formData,
-      });
-      if (!s3Res.ok) throw new Error('Error subiendo video');
-      const { key, url: s3VideoUrl } = await s3Res.json();
-
-      // 3. Analizar desde S3
-      setUploadStatus('Procesando con MediaPipe...');
-      const response = await fetch(`${BACKEND_URL}/analyze-s3`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ video_url: s3VideoUrl, key }),
       });
 
       if (!response.ok) throw new Error(`Error del servidor: ${await response.text()}`);
