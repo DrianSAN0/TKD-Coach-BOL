@@ -7,7 +7,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-
 import { BACKEND_URL } from '../config';
 
 type Props = {
@@ -15,26 +14,26 @@ type Props = {
 };
 
 export default function RegisterScreen({ navigation }: Props) {
-  const [nombre,      setNombre]      = useState('');
-  const [apellido,    setApellido]    = useState('');
-  const [correo,      setCorreo]      = useState('');
-  const [contrasena,  setContrasena]  = useState('');
-  const [confirmar,   setConfirmar]   = useState('');
-  const [loading,     setLoading]     = useState(false);
-  const [showPass,    setShowPass]    = useState(false);
-  const [aceptado,    setAceptado]    = useState(false);
+  const [nombre,     setNombre]     = useState('');
+  const [apellido,   setApellido]   = useState('');
+  const [correo,     setCorreo]     = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [confirmar,  setConfirmar]  = useState('');
+  const [loading,    setLoading]    = useState(false);
+  const [showPass,   setShowPass]   = useState(false);
+  const [aceptado,   setAceptado]   = useState(false);
 
   const handleRegister = async () => {
     if (!nombre || !apellido || !correo || !contrasena || !confirmar) {
-      Alert.alert('Error', 'Completá todos los campos');
+      Alert.alert('Error', 'Completa todos los campos');
       return;
     }
     if (contrasena !== confirmar) {
-      Alert.alert('Error', 'Las contraseñas no coinciden');
+      Alert.alert('Error', 'Las contrasenas no coinciden');
       return;
     }
     if (!aceptado) {
-      Alert.alert('Error', 'Debés aceptar los términos y condiciones');
+      Alert.alert('Error', 'Debes aceptar los terminos y condiciones');
       return;
     }
     setLoading(true);
@@ -46,8 +45,8 @@ export default function RegisterScreen({ navigation }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Error al registrarse');
-      Alert.alert('¡Éxito!', 'Cuenta creada correctamente', [
-        { text: 'Iniciar sesión', onPress: () => navigation.replace('Login') }
+      Alert.alert('Exito!', 'Cuenta creada correctamente', [
+        { text: 'Iniciar sesion', onPress: () => navigation.replace('Login') }
       ]);
     } catch (e: any) {
       Alert.alert('Error', e.message);
@@ -61,7 +60,6 @@ export default function RegisterScreen({ navigation }: Props) {
       <StatusBar backgroundColor="#1E1E1E" barStyle="light-content" />
       <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
 
-        {/* Header */}
         <View style={s.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
             <Ionicons name="chevron-back" size={22} color="#E93735" />
@@ -69,9 +67,8 @@ export default function RegisterScreen({ navigation }: Props) {
           <Text style={s.titulo}>Crear una cuenta</Text>
         </View>
 
-        <Text style={s.subtitulo}>¡Empecemos!</Text>
+        <Text style={s.subtitulo}>Empecemos!</Text>
 
-        {/* Formulario */}
         <View style={s.formCard}>
           <Text style={s.label}>Nombre completo</Text>
           <TextInput
@@ -102,11 +99,11 @@ export default function RegisterScreen({ navigation }: Props) {
             autoCapitalize="none"
           />
 
-          <Text style={s.label}>Contraseña</Text>
+          <Text style={s.label}>Contrasena</Text>
           <View style={s.passWrap}>
             <TextInput
               style={[s.input, { flex: 1, marginBottom: 0 }]}
-              placeholder="••••••••••••"
+              placeholder="············"
               placeholderTextColor="#999"
               value={contrasena}
               onChangeText={setContrasena}
@@ -117,10 +114,10 @@ export default function RegisterScreen({ navigation }: Props) {
             </TouchableOpacity>
           </View>
 
-          <Text style={s.label}>Confirmar contraseña</Text>
+          <Text style={s.label}>Confirmar contrasena</Text>
           <TextInput
             style={s.input}
-            placeholder="••••••••••••"
+            placeholder="············"
             placeholderTextColor="#999"
             value={confirmar}
             onChangeText={setConfirmar}
@@ -128,20 +125,18 @@ export default function RegisterScreen({ navigation }: Props) {
           />
         </View>
 
-        {/* Términos */}
         <TouchableOpacity style={s.termsRow} onPress={() => setAceptado(!aceptado)}>
           <View style={[s.checkbox, aceptado && s.checkboxActivo]}>
             {aceptado && <Ionicons name="checkmark" size={14} color="#fff" />}
           </View>
           <Text style={s.termsText}>
             Acepto todos los{' '}
-            <Text style={s.termsLink}>Términos de uso</Text>
+            <Text style={s.termsLink}>Terminos de uso</Text>
             {' '}y{' '}
-            <Text style={s.termsLink}>Políticas de privacidad.</Text>
+            <Text style={s.termsLink}>Politicas de privacidad.</Text>
           </Text>
         </TouchableOpacity>
 
-        {/* Botón */}
         <TouchableOpacity
           style={[s.registerBtn, loading && s.disabled]}
           onPress={handleRegister}
@@ -152,11 +147,10 @@ export default function RegisterScreen({ navigation }: Props) {
             : <Text style={s.registerBtnText}>Crear cuenta</Text>}
         </TouchableOpacity>
 
-        {/* Ya tengo cuenta */}
         <View style={s.loginRow}>
-          <Text style={s.loginText}>¿Ya tienes una cuenta? </Text>
+          <Text style={s.loginText}>Ya tienes una cuenta? </Text>
           <TouchableOpacity onPress={() => navigation.replace('Login')}>
-            <Text style={s.loginLink}>Inicia sesión</Text>
+            <Text style={s.loginLink}>Inicia sesion</Text>
           </TouchableOpacity>
         </View>
 

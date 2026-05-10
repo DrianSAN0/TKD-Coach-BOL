@@ -17,7 +17,13 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#1E1E1E"
       },
-      "package": "com.driansan.tkdcoachbol"
+      "package": "com.driansan.tkdcoachbol",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "plugins": [
       [
@@ -42,6 +48,13 @@
       "eas": {
         "projectId": "db25b8ef-541a-4595-8205-f2116a27f988"
       }
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/db25b8ef-541a-4595-8205-f2116a27f988"
+    },
+    "ios": {}
   }
 }
