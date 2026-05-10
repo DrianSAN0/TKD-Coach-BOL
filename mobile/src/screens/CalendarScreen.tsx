@@ -223,10 +223,13 @@ export default function CalendarScreen({ navigation }: Props) {
         {/* ── Llave de competidores ── */}
         <View style={s.llaveCard}>
           <Text style={s.llaveTitulo}>Llave de competidores</Text>
-          {eventosSeleccionados.length > 0 && esDiaCompetencia(eventosSeleccionados[0].fecha) ? (
-            <TouchableOpacity style={s.llaveBtn} onPress={() => Alert.alert('Llaves', 'Ver llaves')}>
-              <Text style={s.llaveBtnText}>Ver Llaves</Text>
-            </TouchableOpacity>
+{eventosSeleccionados.length > 0 && esDiaCompetencia(eventosSeleccionados[0].fecha) ? (
+  <TouchableOpacity style={s.llaveBtn} onPress={() => navigation.navigate('Llaves', {
+    categoria: '-58kg',
+    genero: 'Masculino'
+  })}>
+    <Text style={s.llaveBtnText}>Ver Llaves</Text>
+  </TouchableOpacity>
           ) : (
             <>
               <View style={s.alertaCirculo}>
