@@ -76,7 +76,6 @@ export default function AppNavigator() {
       <Stack.Screen name="Calendar"            component={CalendarScreen} />
       <Stack.Screen name="ListaCompetidores"   component={ListaCompetidoresScreen} />
       <Stack.Screen name="LlaveCompetencia" component={LlaveCompetenciaScreen} />
-
     </Stack.Navigator>
   );
 }
