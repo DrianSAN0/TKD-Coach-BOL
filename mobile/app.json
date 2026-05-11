@@ -17,14 +17,16 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#1E1E1E"
       },
-      "package": "com.driansan.tkdcoachbol"
+      "package": "com.driansan.tkdcoachbol",
+      "usesCleartextTraffic": true
     },
     "plugins": [
       [
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "2.0.21"
+            "kotlinVersion": "2.0.21",
+            "usesCleartextTraffic": true
           }
         }
       ],
