@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+const BACKEND_URL = 'http://10.0.2.2:8000';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;

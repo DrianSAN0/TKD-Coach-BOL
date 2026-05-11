@@ -16,7 +16,7 @@ import RankingPesosScreen from '../screens/RankingPesosScreen';
 import RankingTablaScreen from '../screens/RankingTablaScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import ListaCompetidoresScreen from '../screens/ListaCompetidoresScreen';
-
+import LlaveCompetenciaScreen from '../screens/LlaveCompetenciaScreen';
 export interface Keypoint {
   x: number; y: number; z: number; visibility: number;
 }
@@ -45,6 +45,7 @@ export type RootStackParamList = {
   RankingPesos: { categoria: string; genero: string };
   RankingTabla: { categoria: string; genero: string; peso: string };
   ListaCompetidores: { modalidad: string };
+  LlaveCompetencia: { categoria: string; genero: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -74,6 +75,8 @@ export default function AppNavigator() {
       <Stack.Screen name="RankingTabla"        component={RankingTablaScreen} />
       <Stack.Screen name="Calendar"            component={CalendarScreen} />
       <Stack.Screen name="ListaCompetidores"   component={ListaCompetidoresScreen} />
+      <Stack.Screen name="LlaveCompetencia" component={LlaveCompetenciaScreen} />
+
     </Stack.Navigator>
   );
 }
