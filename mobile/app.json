@@ -17,12 +17,7 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#1E1E1E"
       },
-      "package": "com.driansan.tkdcoachbol",
-      "usesCleartextTraffic": true,
-      "permissions": [
-        "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
-      ]
+      "package": "com.driansan.tkdcoachbol"
     },
     "plugins": [
       [
@@ -39,8 +34,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Necesitamos acceso a tu galerÃ­a para seleccionar videos.",
-          "cameraPermission": "Necesitamos acceso a la cÃ¡mara para grabar videos."
+          "photosPermission": "Necesitamos acceso a tu galeria para seleccionar videos.",
+          "cameraPermission": "Necesitamos acceso a la camara para grabar videos."
         }
       ]
     ],
@@ -48,7 +43,6 @@
       "eas": {
         "projectId": "d5a8242d-4628-4016-85d9-a770511b0242"
       }
-    },
-    "owner": "driansan"
+    }
   }
 }
