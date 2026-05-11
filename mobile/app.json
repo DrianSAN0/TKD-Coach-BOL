@@ -13,13 +13,17 @@
       "backgroundColor": "#1E1E1E"
     },
     "android": {
-  "adaptiveIcon": {
-    "foregroundImage": "./assets/android-icon-foreground.png",
-    "backgroundColor": "#1E1E1E"
-  },
-  "package": "com.driansan.tkdcoachbol",
-  "usesCleartextTraffic": true
-},
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#1E1E1E"
+      },
+      "package": "com.driansan.tkdcoachbol",
+      "usesCleartextTraffic": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    },
     "plugins": [
       [
         "expo-build-properties",
@@ -35,15 +39,16 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Necesitamos acceso a tu galería para seleccionar videos.",
-          "cameraPermission": "Necesitamos acceso a la cámara para grabar videos."
+          "photosPermission": "Necesitamos acceso a tu galerÃ­a para seleccionar videos.",
+          "cameraPermission": "Necesitamos acceso a la cÃ¡mara para grabar videos."
         }
       ]
     ],
     "extra": {
       "eas": {
-        "projectId": "db25b8ef-541a-4595-8205-f2116a27f988"
+        "projectId": "d5a8242d-4628-4016-85d9-a770511b0242"
       }
-    }
+    },
+    "owner": "driansan"
   }
 }
