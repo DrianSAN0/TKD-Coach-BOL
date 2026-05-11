@@ -13,13 +13,13 @@
       "backgroundColor": "#1E1E1E"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundColor": "#1E1E1E"
-      },
-      "package": "com.driansan.tkdcoachbol",
-      "usesCleartextTraffic": true
-    },
+  "adaptiveIcon": {
+    "foregroundImage": "./assets/android-icon-foreground.png",
+    "backgroundColor": "#1E1E1E"
+  },
+  "package": "com.driansan.tkdcoachbol",
+  "usesCleartextTraffic": true
+},
     "plugins": [
       [
         "expo-build-properties",

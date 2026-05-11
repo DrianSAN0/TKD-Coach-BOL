@@ -17,22 +17,22 @@ const INSTRUCCIONES = [
   {
     icon: 'videocam-outline' as const,
     titulo: 'Selecciona tu video',
-    desc: 'Elige un video de tu galería o grábalo directamente desde la app.',
+    desc: 'Elige un video de tu galeria o grabalo directamente desde la app.',
   },
   {
     icon: 'body-outline' as const,
     titulo: 'Cuerpo completo visible',
-    desc: 'Asegurate de que tu cuerpo completo esté en el cuadro durante toda la ejecución.',
+    desc: 'Asegurate de que tu cuerpo completo este en el cuadro durante toda la ejecucion.',
   },
   {
     icon: 'sunny-outline' as const,
-    titulo: 'Buena iluminación',
-    desc: 'Grabá en un lugar bien iluminado con fondo limpio para mejor detección.',
+    titulo: 'Buena iluminacion',
+    desc: 'Graba en un lugar bien iluminado con fondo limpio para mejor deteccion.',
   },
   {
     icon: 'analytics-outline' as const,
-    titulo: 'Análisis automático',
-    desc: 'La IA analizará tu poomsae frame a frame y te dará una evaluación detallada.',
+    titulo: 'Analisis automatico',
+    desc: 'La IA analizara tu poomsae frame a frame y te dara una evaluacion detallada.',
   },
 ];
 
@@ -40,20 +40,17 @@ export default function ScannerInicialScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={s.container}>
 
-      {/* ── Header ── */}
+      {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={22} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Escáner biométrico</Text>
+        <Text style={s.headerTitle}>Escaner biometrico</Text>
         <View style={{ width: 22 }} />
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={s.scroll}
-      >
-        {/* ── Bienvenida ── */}
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
+
         <Text style={s.titulo}>BIENVENIDO</Text>
 
         <View style={s.iconoWrap}>
@@ -61,14 +58,13 @@ export default function ScannerInicialScreen({ navigation }: Props) {
         </View>
 
         <Text style={s.descripcion}>
-          Te damos la bienvenida al escáner biométrico. Esta función analiza tu
-          ejecución de poomsae para ayudarte a evaluar tu rendimiento y seguir
-          tu progreso. A través de tecnología avanzada, podrás identificar
-          errores y perfeccionar tu técnica para alcanzar un mejor desempeño
+          Te damos la bienvenida al escaner biometrico. Esta funcion analiza tu
+          ejecucion de poomsae para ayudarte a evaluar tu rendimiento y seguir
+          tu progreso. A traves de tecnologia avanzada, podras identificar
+          errores y perfeccionar tu tecnica para alcanzar un mejor desempeno
           en competencias.
         </Text>
 
-        {/* ── Instrucciones ── */}
         <Text style={s.instruccionesTitulo}>Instrucciones</Text>
 
         {INSTRUCCIONES.map((item, i) => (
@@ -83,14 +79,13 @@ export default function ScannerInicialScreen({ navigation }: Props) {
           </View>
         ))}
 
-        {/* ── Botón ── */}
         <TouchableOpacity
           style={s.btn}
           onPress={() => navigation.navigate('ListaPoomsae')}
           activeOpacity={0.85}
         >
           <Ionicons name="scan-outline" size={22} color={colors.white} />
-          <Text style={s.btnText}>Comenzar análisis</Text>
+          <Text style={s.btnText}>Comenzar analisis</Text>
         </TouchableOpacity>
 
         <View style={{ height: 16 }} />
@@ -102,19 +97,19 @@ export default function ScannerInicialScreen({ navigation }: Props) {
 }
 
 const s = StyleSheet.create({
-  container:            { flex: 1, backgroundColor: colors.background },
-  header:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
-  headerTitle:          { color: colors.white, fontSize: 18, fontWeight: '700' },
-  scroll:               { paddingHorizontal: 20, paddingTop: 8 },
-  titulo:               { color: colors.white, fontSize: 26, fontWeight: '700', textAlign: 'center', marginBottom: 16 },
-  iconoWrap:            { alignItems: 'center', marginBottom: 20 },
-  descripcion:          { color: colors.textSecondary, fontSize: 13, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
-  instruccionesTitulo:  { color: colors.white, fontSize: 20, fontWeight: '700', marginBottom: 14 },
-  instruccionCard:      { backgroundColor: colors.cardDark, borderRadius: 14, padding: 16, flexDirection: 'row', gap: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border },
-  instruccionIconWrap:  { width: 44, height: 44, backgroundColor: '#2A2A2A', borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  instruccionTexto:     { flex: 1, gap: 4 },
-  instruccionTitulo:    { color: colors.white, fontSize: 14, fontWeight: '700' },
-  instruccionDesc:      { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
-  btn:                  { backgroundColor: colors.primary, borderRadius: 30, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 20 },
-  btnText:              { color: colors.white, fontSize: 16, fontWeight: '700' },
+  container:           { flex: 1, backgroundColor: colors.background },
+  header:              { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
+  headerTitle:         { color: colors.white, fontSize: 18, fontWeight: '700' },
+  scroll:              { paddingHorizontal: 20, paddingTop: 8 },
+  titulo:              { color: colors.white, fontSize: 26, fontWeight: '700', textAlign: 'center', marginBottom: 16 },
+  iconoWrap:           { alignItems: 'center', marginBottom: 20 },
+  descripcion:         { color: colors.textSecondary, fontSize: 13, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
+  instruccionesTitulo: { color: colors.white, fontSize: 20, fontWeight: '700', marginBottom: 14 },
+  instruccionCard:     { backgroundColor: colors.cardDark, borderRadius: 14, padding: 16, flexDirection: 'row', gap: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border },
+  instruccionIconWrap: { width: 44, height: 44, backgroundColor: '#2A2A2A', borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  instruccionTexto:    { flex: 1, gap: 4 },
+  instruccionTitulo:   { color: colors.white, fontSize: 14, fontWeight: '700' },
+  instruccionDesc:     { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
+  btn:                 { backgroundColor: colors.primary, borderRadius: 30, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 20 },
+  btnText:             { color: colors.white, fontSize: 16, fontWeight: '700' },
 });
