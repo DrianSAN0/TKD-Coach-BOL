@@ -14,6 +14,9 @@ class CompetidorResponse(BaseModel):
     edad: Optional[int]
     sexo: Optional[str]
     club: Optional[str]
+    ciudad: Optional[str]
+    categoria: Optional[str]
+    departamento: Optional[str]
 
     class Config:
         from_attributes = True
@@ -30,7 +33,10 @@ def get_competidores(
             a.peso,
             EXTRACT(YEAR FROM AGE(a.fecha_nacimiento))::int AS edad,
             a.sexo,
-            c.nombre_club AS club
+            a.categoria,
+            c.nombre_club AS club,
+            c.ciudad,
+            c.ciudad AS departamento
         FROM atleta a
         JOIN usuario u ON a.id_usuario = u.id_usuario
         LEFT JOIN club c ON a.id_club = c.id_club
@@ -44,7 +50,45 @@ def get_competidores(
             peso=r.peso,
             edad=r.edad,
             sexo=r.sexo,
+            categoria=r.categoria,
             club=r.club,
+            ciudad=r.ciudad,
+            departamento=r.ciudad,
         )
+        for r in rows
+    ]
+@router.get("/por-peso")
+def get_competidores_por_peso(
+    peso: Optional[float] = None,
+    sexo: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    query = text("""
+        SELECT
+            a.id_atleta,
+            u.nombre,
+            u.apellido,
+            a.peso,
+            a.sexo,
+            c.nombre_club AS club,
+            c.ciudad
+        FROM atleta a
+        JOIN usuario u ON a.id_usuario = u.id_usuario
+        LEFT JOIN club c ON a.id_club = c.id_club
+        WHERE (:peso IS NULL OR a.peso = :peso)
+        AND (:sexo IS NULL OR LOWER(a.sexo) = LOWER(:sexo))
+        ORDER BY u.apellido
+    """)
+    rows = db.execute(query, {'peso': peso, 'sexo': sexo}).fetchall()
+    return [
+        {
+            'id_atleta': str(r.id_atleta),
+            'nombre': r.nombre,
+            'apellido': r.apellido,
+            'peso': r.peso,
+            'sexo': r.sexo,
+            'club': r.club,
+            'ciudad': r.ciudad,
+        }
         for r in rows
     ]
