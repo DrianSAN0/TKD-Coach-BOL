@@ -109,7 +109,7 @@ export default function ResultScreen({ navigation, route }: Props) {
         {/* Botones */}
         <TouchableOpacity
           style={s.retryBtn}
-          onPress={() => navigation.navigate('UploadVideo')}
+          onPress={() => navigation.navigate('UploadVideo', {})}
         >
           <Ionicons name="refresh-outline" size={20} color={colors.white} />
           <Text style={s.retryBtnText}>Analizar otro video</Text>

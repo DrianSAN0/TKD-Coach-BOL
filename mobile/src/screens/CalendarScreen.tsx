@@ -114,7 +114,7 @@ export default function CalendarScreen({ navigation }: Props) {
         <View style={s.llaveCard}>
           <Text style={s.llaveTitulo}>Llave de competidores</Text>
           {llaveHabilitada ? (
-            <TouchableOpacity style={s.llaveBtn} onPress={() => Alert.alert('Llaves', 'Ver llaves')}>
+            <TouchableOpacity style={s.llaveBtn} onPress={() => navigation.navigate('LlaveCompetencia', { categoria: '-58kg', genero: 'Masculino' })}>
               <Text style={s.llaveBtnText}>Ver Llaves</Text>
             </TouchableOpacity>
           ) : (

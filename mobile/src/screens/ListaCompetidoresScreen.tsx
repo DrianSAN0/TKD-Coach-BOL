@@ -9,9 +9,9 @@ import { RouteProp } from '@react-navigation/native';
 import { colors } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavBar from '../components/BottomNavBar';
-const BACKEND_URL = 'http://10.0.2.2:8000';
 
 const TEAL = '#5BBEBB';
+const BACKEND_URL = 'http://10.0.2.2:8000';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ListaCompetidores'>;
@@ -26,10 +26,19 @@ type Competidor = {
   sexo: string | null;
   club: string | null;
   categoria: string | null;
+  departamento: string | null;
 };
 
-const CATEGORIAS_POOMSAE = ['Todos','Cadete', 'Junior', 'Senior'];
+const CATEGORIAS_POOMSAE = ['Todos', 'Cadete', 'Junior', 'Senior'];
 const CATEGORIAS_KYORUGI = ['Todos', 'Femenino', 'Masculino'];
+
+const edadCategoria = (edad: number | null): string => {
+  if (!edad) return 'Sin categoría';
+  if (edad >= 12 && edad <= 14) return 'Cadete';
+  if (edad >= 15 && edad <= 17) return 'Junior';
+  if (edad >= 18 && edad <= 30) return 'Senior';
+  return 'Sin categoría';
+};
 
 export default function ListaCompetidoresScreen({ navigation, route }: Props) {
   const { modalidad } = route.params;
@@ -38,7 +47,8 @@ export default function ListaCompetidoresScreen({ navigation, route }: Props) {
   const [error, setError] = useState('');
   const [filtro, setFiltro] = useState('Todos');
 
-  const categorias = modalidad === 'Poomsae' ? CATEGORIAS_POOMSAE : CATEGORIAS_KYORUGI;
+  const esPoomsae = modalidad === 'Poomsae';
+  const categorias = esPoomsae ? CATEGORIAS_POOMSAE : CATEGORIAS_KYORUGI;
 
   useEffect(() => { fetchCompetidores(); }, []);
 
@@ -59,8 +69,8 @@ export default function ListaCompetidoresScreen({ navigation, route }: Props) {
   const competidoresFiltrados = filtro === 'Todos'
     ? competidores
     : competidores.filter(c => {
-        if (modalidad === 'Kyorugi') return c.sexo === filtro;
-        return c.categoria === filtro;
+        if (!esPoomsae) return c.sexo?.toLowerCase() === filtro.toLowerCase();
+        return edadCategoria(c.edad) === filtro;
       });
 
   const formatPeso = (peso: number | null) => peso ? `-${Math.round(peso)}kg` : '-';
@@ -83,11 +93,7 @@ export default function ListaCompetidoresScreen({ navigation, route }: Props) {
       </View>
 
       {/* Filtros */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={s.filtrosRow}
-      >
+      <View style={s.filtrosRow}>
         {categorias.map(cat => (
           <TouchableOpacity
             key={cat}
@@ -97,15 +103,15 @@ export default function ListaCompetidoresScreen({ navigation, route }: Props) {
             <Text style={[s.filtroText, filtro === cat && s.filtroTextActivo]}>{cat}</Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
 
       {/* Tabla header */}
       <View style={s.tablaHeader}>
         <View style={s.colNombre}>
           <Text style={s.tablaHeaderText}>Nombre</Text>
         </View>
-        <View style={s.colPeso}>
-          <Text style={s.tablaHeaderText}>Peso</Text>
+        <View style={s.colMedio}>
+          <Text style={s.tablaHeaderText}>{esPoomsae ? 'Depto.' : 'Peso'}</Text>
         </View>
         <View style={s.colEdad}>
           <Text style={s.tablaHeaderText}>Edad</Text>
@@ -140,8 +146,10 @@ export default function ListaCompetidoresScreen({ navigation, route }: Props) {
                 </Text>
                 {c.club && <Text style={s.filaClub}>{c.club}</Text>}
               </View>
-              <View style={s.colPeso}>
-                <Text style={s.filaTexto}>{formatPeso(c.peso)}</Text>
+              <View style={s.colMedio}>
+                <Text style={s.filaTexto}>
+                  {esPoomsae ? (c.departamento ?? '-') : formatPeso(c.peso)}
+                </Text>
               </View>
               <View style={s.colEdad}>
                 <Text style={s.filaTexto}>{c.edad ?? '-'}</Text>
@@ -158,28 +166,28 @@ export default function ListaCompetidoresScreen({ navigation, route }: Props) {
 }
 
 const s = StyleSheet.create({
-  container:       { flex: 1, backgroundColor: '#0D0D0D' },
-  header:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
-  titulo:          { color: colors.primary, fontSize: 18, fontWeight: '700' },
-  subtitulo:       { color: colors.textSecondary, fontSize: 12 },
-  filtrosRow:      { paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
-  filtroBtn:       { paddingVertical: 6, paddingHorizontal: 16, borderRadius: 20, backgroundColor: '#1A1A1A', borderWidth: 1, borderColor: '#2A2A2A' },
-  filtroBtnActivo: { backgroundColor: TEAL, borderColor: TEAL },
-  filtroText:      { color: colors.textSecondary, fontSize: 13, fontWeight: '600' },
-  filtroTextActivo:{ color: '#1E1E1E', fontWeight: '700' },
-  tablaHeader:     { flexDirection: 'row', backgroundColor: colors.primary, paddingVertical: 10, paddingHorizontal: 16, marginHorizontal: 16, borderRadius: 8, marginBottom: 4 },
-  tablaHeaderText: { color: colors.white, fontSize: 13, fontWeight: '700', textAlign: 'center' },
-  colNombre:       { flex: 1 },
-  colPeso:         { width: 70, alignItems: 'center' },
-  colEdad:         { width: 50, alignItems: 'center' },
-  scroll:          { flex: 1, paddingHorizontal: 16 },
-  fila:            { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 4, borderRadius: 8 },
-  filaAlterna:     { backgroundColor: '#1A1A1A' },
-  filaNombre:      { color: colors.white, fontSize: 13, fontWeight: '600' },
-  filaClub:        { color: colors.textSecondary, fontSize: 11, marginTop: 2 },
-  filaTexto:       { color: colors.white, fontSize: 13, textAlign: 'center' },
-  center:          { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
-  errorText:       { color: colors.textSecondary, fontSize: 14, textAlign: 'center' },
-  retryBtn:        { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 10, paddingHorizontal: 24 },
-  retryText:       { color: colors.white, fontSize: 14, fontWeight: '700' },
+  container:        { flex: 1, backgroundColor: '#0D0D0D' },
+  header:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
+  titulo:           { color: colors.primary, fontSize: 18, fontWeight: '700' },
+  subtitulo:        { color: colors.textSecondary, fontSize: 12 },
+  filtrosRow:       { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 8, gap: 8 },
+  filtroBtn:        { paddingVertical: 6, paddingHorizontal: 16, borderRadius: 20, backgroundColor: '#1A1A1A', borderWidth: 1, borderColor: '#2A2A2A' },
+  filtroBtnActivo:  { backgroundColor: TEAL, borderColor: TEAL },
+  filtroText:       { color: colors.textSecondary, fontSize: 13, fontWeight: '600' },
+  filtroTextActivo: { color: '#1E1E1E', fontWeight: '700' },
+  tablaHeader:      { flexDirection: 'row', backgroundColor: colors.primary, paddingVertical: 10, paddingHorizontal: 16, marginHorizontal: 16, borderRadius: 8, marginBottom: 4 },
+  tablaHeaderText:  { color: colors.white, fontSize: 13, fontWeight: '700', textAlign: 'center' },
+  colNombre:        { flex: 1 },
+  colMedio:         { width: 70, alignItems: 'center' },
+  colEdad:          { width: 50, alignItems: 'center' },
+  scroll:           { flex: 1, paddingHorizontal: 16 },
+  fila:             { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 4, borderRadius: 8 },
+  filaAlterna:      { backgroundColor: '#1A1A1A' },
+  filaNombre:       { color: colors.white, fontSize: 13, fontWeight: '600' },
+  filaClub:         { color: colors.textSecondary, fontSize: 11, marginTop: 2 },
+  filaTexto:        { color: colors.white, fontSize: 13, textAlign: 'center' },
+  center:           { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
+  errorText:        { color: colors.textSecondary, fontSize: 14, textAlign: 'center' },
+  retryBtn:         { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 10, paddingHorizontal: 24 },
+  retryText:        { color: colors.white, fontSize: 14, fontWeight: '700' },
 });

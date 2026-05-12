@@ -11,6 +11,8 @@ const DOT_COLORS = ['#E93735', '#F5C518', '#2E8B57', '#5BBEBB', '#A855F7'];
 export const EVENTOS: { fecha: string; nombre: string; hora: string }[] = [
   { fecha: '2026-05-16', nombre: '2do ranking nacional tarija', hora: '08:00' },
   { fecha: '2026-05-02', nombre: 'Torneo Regional La Paz',       hora: '09:00' },
+  { fecha: '2026-05-12', nombre: 'Competencia de prueba hoy',    hora: '10:00' },
+  { fecha: '2026-05-13', nombre: 'Competencia mañana',           hora: '09:00' },
 ];
 
 type Props = {
