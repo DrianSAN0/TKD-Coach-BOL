@@ -24,7 +24,7 @@ const diasHastaEvento = (fechaEvento: string) => {
 };
 
 const puedeVerLista  = (fecha: string) => diasHastaEvento(fecha) <= 1;
-const esDiaCompetencia = (fecha: string) => diasHastaEvento(fecha) === 0;
+const llaveDisponible = (fecha: string) => diasHastaEvento(fecha) <= 0;
 
 export default function CalendarScreen({ navigation }: Props) {
   const hoy = new Date();
@@ -44,7 +44,7 @@ export default function CalendarScreen({ navigation }: Props) {
 
   const eventoActivo = eventosSeleccionados[0];
   const listaHabilitada = eventoActivo ? puedeVerLista(eventoActivo.fecha) : false;
-  const llaveHabilitada = eventoActivo ? esDiaCompetencia(eventoActivo.fecha) : false;
+  const llaveHabilitada = eventoActivo ? llaveDisponible(eventoActivo.fecha) : false;
 
   return (
     <SafeAreaView style={s.container}>
