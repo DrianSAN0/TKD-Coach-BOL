@@ -17,6 +17,7 @@ import RankingTablaScreen from '../screens/RankingTablaScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import ListaCompetidoresScreen from '../screens/ListaCompetidoresScreen';
 import LlaveCompetenciaScreen from '../screens/LlaveCompetenciaScreen';
+import DetalleAnalisisScreen from '../screens/DetalleAnalisisScreen';
 export interface Keypoint {
   x: number; y: number; z: number; visibility: number;
 }
@@ -24,8 +25,11 @@ export interface FrameData {
   frame: number; keypoints: Keypoint[];
 }
 export interface AnalysisData {
-  fps: number; total_frames: number; width: number; height: number;
+ fps: number; total_frames: number; width: number; height: number;
   connections: [number, number][]; frames: FrameData[];
+  score?: number;
+  detalles?: any[];
+  mensaje?: string;
 }
 
 export type RootStackParamList = {
@@ -38,14 +42,15 @@ export type RootStackParamList = {
   UploadVideo: { poomsae?: string };
   Calendar: undefined;
   Analysis: { videoUri: string; analysisData: AnalysisData; poomsae?: string };
-  Felicidades: { score: number; poomsae?: string; framesCount: number };
-  Resultados: { score: number; poomsae?: string; framesCount: number };
+Felicidades: { score: number; poomsae?: string; framesCount: number; detalles?: any[] };
+  Resultados:  { score: number; poomsae?: string; framesCount: number; guardar?: boolean; detalles?: any[] };
   Result: { score: number; stability: string; posture: string; framesCount: number; videoUri: string };
   Ranking: undefined;
   RankingPesos: { categoria: string; genero: string };
   RankingTabla: { categoria: string; genero: string; peso: string };
   ListaCompetidores: { modalidad: string };
   LlaveCompetencia: { categoria: string; genero: string };
+  DetalleAnalisis: { item: any };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -76,6 +81,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Calendar"            component={CalendarScreen} />
       <Stack.Screen name="ListaCompetidores"   component={ListaCompetidoresScreen} />
       <Stack.Screen name="LlaveCompetencia" component={LlaveCompetenciaScreen} />
+      <Stack.Screen name="DetalleAnalisis" component={DetalleAnalisisScreen} />
     </Stack.Navigator>
   );
 }

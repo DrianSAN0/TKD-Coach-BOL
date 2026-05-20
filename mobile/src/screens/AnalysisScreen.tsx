@@ -216,9 +216,10 @@ export default function AnalysisScreen({ navigation, route }: Props) {
 <TouchableOpacity
   style={s.siguienteBtn}
   onPress={() => navigation.navigate('Felicidades', {
-    score: detectionRate / 10,
-    poomsae: route.params.poomsae,
-    framesCount: frames.length,
+  score: analysisData.score ?? detectionRate / 10,
+  poomsae: route.params.poomsae,
+  framesCount: frames.length,
+  detalles: analysisData.detalles ?? [],
   })}
 >
   <Text style={s.siguienteBtnText}>Siguiente</Text>

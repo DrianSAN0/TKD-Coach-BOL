@@ -24,10 +24,11 @@ type HistorialItem = {
   score: number;
   fecha: string;
   framesCount: number;
+  detalles?: any[];
 };
 
 export default function ResultadosScreen({ navigation, route }: Props) {
-  const { score, poomsae, framesCount } = route.params;
+  const { score, poomsae, framesCount, guardar, detalles } = route.params;
   const [historial, setHistorial] = useState<HistorialItem[]>([]);
 
   useEffect(() => {
@@ -36,23 +37,25 @@ export default function ResultadosScreen({ navigation, route }: Props) {
 
   const guardarYCargar = async () => {
     try {
-      // Cargar historial existente
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
       const prev: HistorialItem[] = raw ? JSON.parse(raw) : [];
 
-      // Agregar nuevo resultado al inicio
-      const nuevo: HistorialItem = {
-        poomsae: poomsae || 'Poomsae',
-        score,
-        framesCount,
-        fecha: new Date().toLocaleDateString('es-BO', {
-          day: 'numeric', month: 'long', year: 'numeric'
-        }),
-      };
-
-      const actualizado = [nuevo, ...prev];
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(actualizado));
-      setHistorial(actualizado);
+      if (guardar) {
+        const nuevo: HistorialItem = {
+          poomsae: poomsae || 'Poomsae',
+          score,
+          framesCount,
+          detalles: detalles || [],
+          fecha: new Date().toLocaleDateString('es-BO', {
+            day: 'numeric', month: 'long', year: 'numeric'
+          }),
+        };
+        const actualizado = [nuevo, ...prev];
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(actualizado));
+        setHistorial(actualizado);
+      } else {
+        setHistorial(prev);
+      }
     } catch (e) {
       console.error('Error guardando historial:', e);
     }
@@ -97,7 +100,12 @@ export default function ResultadosScreen({ navigation, route }: Props) {
           </View>
         ) : (
           historial.map((item, i) => (
-            <TouchableOpacity key={i} style={s.historialItem} activeOpacity={0.8}>
+            <TouchableOpacity
+              key={i}
+              style={s.historialItem}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('DetalleAnalisis', { item })}
+            >
               <View style={s.numCircle}>
                 <Text style={s.numText}>{i + 1}</Text>
               </View>
