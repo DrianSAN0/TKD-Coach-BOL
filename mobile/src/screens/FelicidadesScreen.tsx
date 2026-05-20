@@ -47,6 +47,8 @@ export default function FelicidadesScreen({ navigation, route }: Props) {
             score,
             poomsae,
             framesCount,
+            guardar: true,
+            detalles: route.params.detalles,
           })}
           activeOpacity={0.85}
         >
