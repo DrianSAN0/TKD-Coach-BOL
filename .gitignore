@@ -10,3 +10,6 @@ outputs/*
 models/*
 data/processed/*.json
 data/processed/*.csv
+ai/data/dataset/
+ai/data/samples/*.mkv
+ai/models/*.pkl
