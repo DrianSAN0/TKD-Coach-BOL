@@ -13,3 +13,5 @@ data/processed/*.csv
 ai/data/dataset/
 ai/data/samples/*.mkv
 ai/models/*.pkl
+
+ai/data/dataset/imagenes/
