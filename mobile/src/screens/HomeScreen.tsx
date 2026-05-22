@@ -25,15 +25,33 @@ const NOTICIAS = [
   { id: '3', imagen: require('../../assets/noticiasbol1.jpeg'), titulo: 'Taekwondo Bolivia',                fecha: 'Mayo 2026'  },
 ];
 
+const getStorageKey = async (): Promise<string> => {
+  const raw = await AsyncStorage.getItem('tkd_usuario');
+  if (raw) {
+    const usuario = JSON.parse(raw);
+    return `tkd_historial_${usuario.id_usuario}`;
+  }
+  return 'tkd_historial_guest';
+};
+
 export default function HomeScreen({ navigation }: Props) {
   const [ultimoAnalisis, setUltimoAnalisis] = useState<any>(null);
+  const [nombreUsuario, setNombreUsuario] = useState('Atleta');
 
   useEffect(() => {
     const cargar = async () => {
-      const raw = await AsyncStorage.getItem('tkd_historial');
+      const rawUsuario = await AsyncStorage.getItem('tkd_usuario');
+      if (rawUsuario) {
+        const usuario = JSON.parse(rawUsuario);
+        setNombreUsuario(usuario.nombre || 'Atleta');
+      }
+      const key = await getStorageKey();
+      const raw = await AsyncStorage.getItem(key);
       if (raw) {
         const historial = JSON.parse(raw);
         if (historial.length > 0) setUltimoAnalisis(historial[0]);
+      } else {
+        setUltimoAnalisis(null);
       }
     };
     cargar();
@@ -51,7 +69,7 @@ export default function HomeScreen({ navigation }: Props) {
                 <Ionicons name="person" size={26} color={TEAL} />
               </View>
               <View>
-                <Text style={s.headerTitle}>Hola, Atleta</Text>
+                <Text style={s.headerTitle}>Hola, {nombreUsuario}</Text>
                 <Text style={s.headerSubtitle}>¿Qué haremos hoy?</Text>
               </View>
             </View>
@@ -89,50 +107,50 @@ export default function HomeScreen({ navigation }: Props) {
             />
           </View>
 
-{/* ── PROGRESO ── */}
-<View style={s.section}>
-  <View style={s.sectionRow}>
-    <Text style={s.sectionTitle}>Progreso</Text>
-    <TouchableOpacity style={s.verMasRow} onPress={() => ultimoAnalisis && navigation.navigate('Resultados', {
-      score: ultimoAnalisis.score,
-      poomsae: ultimoAnalisis.poomsae,
-      framesCount: ultimoAnalisis.framesCount,
-    })}>
-      <Text style={s.verMas}>Ver más</Text>
-      <Ionicons name="chevron-forward" size={16} color={RED} />
-    </TouchableOpacity>
-  </View>
+          {/* ── PROGRESO ── */}
+          <View style={s.section}>
+            <View style={s.sectionRow}>
+              <Text style={s.sectionTitle}>Progreso</Text>
+              <TouchableOpacity style={s.verMasRow} onPress={() => ultimoAnalisis && navigation.navigate('Resultados', {
+                score: ultimoAnalisis.score,
+                poomsae: ultimoAnalisis.poomsae,
+                framesCount: ultimoAnalisis.framesCount,
+              })}>
+                <Text style={s.verMas}>Ver más</Text>
+                <Ionicons name="chevron-forward" size={16} color={RED} />
+              </TouchableOpacity>
+            </View>
 
-  {ultimoAnalisis ? (
-    <TouchableOpacity style={s.progressCard} onPress={() => navigation.navigate('Resultados', {
-      score: ultimoAnalisis.score,
-      poomsae: ultimoAnalisis.poomsae,
-      framesCount: ultimoAnalisis.framesCount,
-    })} activeOpacity={0.85}>
-      <View style={s.rankRow}>
-        <View style={s.rankBadge}>
-          <Text style={s.rankNum}>{ultimoAnalisis.score.toFixed(1)}</Text>
-        </View>
-        <View style={s.rankInfo}>
-          <Text style={s.rankPoomsae}>{ultimoAnalisis.poomsae}</Text>
-          <Text style={s.rankFecha}>Fecha: {ultimoAnalisis.fecha}</Text>
-        </View>
-        <View style={s.scoreBox}>
-          <Text style={s.scoreLabel}>Puntuación</Text>
-          <Text style={s.scoreValue}>{ultimoAnalisis.score.toFixed(1)}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  ) : (
-    <View style={s.emptyProgreso}>
-      <Ionicons name="analytics-outline" size={40} color="#444" />
-      <Text style={s.emptyProgresoText}>Aún no tienes análisis</Text>
-      <TouchableOpacity style={s.emptyBtn} onPress={() => navigation.navigate('ScannerInicial')}>
-        <Text style={s.emptyBtnText}>Comenzar análisis</Text>
-      </TouchableOpacity>
-    </View>
-  )}
-</View>
+            {ultimoAnalisis ? (
+              <TouchableOpacity style={s.progressCard} onPress={() => navigation.navigate('Resultados', {
+                score: ultimoAnalisis.score,
+                poomsae: ultimoAnalisis.poomsae,
+                framesCount: ultimoAnalisis.framesCount,
+              })} activeOpacity={0.85}>
+                <View style={s.rankRow}>
+                  <View style={s.rankBadge}>
+                    <Text style={s.rankNum}>{ultimoAnalisis.score.toFixed(1)}</Text>
+                  </View>
+                  <View style={s.rankInfo}>
+                    <Text style={s.rankPoomsae}>{ultimoAnalisis.poomsae}</Text>
+                    <Text style={s.rankFecha}>Fecha: {ultimoAnalisis.fecha}</Text>
+                  </View>
+                  <View style={s.scoreBox}>
+                    <Text style={s.scoreLabel}>Puntuación</Text>
+                    <Text style={s.scoreValue}>{ultimoAnalisis.score.toFixed(1)}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <View style={s.emptyProgreso}>
+                <Ionicons name="analytics-outline" size={40} color="#444" />
+                <Text style={s.emptyProgresoText}>Aún no tienes análisis</Text>
+                <TouchableOpacity style={s.emptyBtn} onPress={() => navigation.navigate('ScannerInicial')}>
+                  <Text style={s.emptyBtnText}>Comenzar análisis</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
 
           {/* ── CALENDARIO ── */}
           <View style={s.section}>
