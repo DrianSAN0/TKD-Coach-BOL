@@ -7,7 +7,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const BACKEND_URL = 'http://10.0.2.2:8000';
 
 type Props = {
@@ -20,7 +20,7 @@ export default function LoginScreen({ navigation }: Props) {
   const [loading,    setLoading]    = useState(false);
   const [showPass,   setShowPass]   = useState(false);
 
-  const handleLogin = async () => {
+const handleLogin = async () => {
     if (!correo || !contrasena) {
       Alert.alert('Error', 'Completá todos los campos');
       return;
@@ -34,6 +34,7 @@ export default function LoginScreen({ navigation }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Error al iniciar sesión');
+      await AsyncStorage.setItem('tkd_usuario', JSON.stringify(data));
       navigation.replace('Home');
     } catch (e: any) {
       Alert.alert('Error', e.message);

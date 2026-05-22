@@ -12,7 +12,6 @@ import BottomNavBar from '../components/BottomNavBar';
 
 const TEAL = '#5BBEBB';
 const RED  = '#E93735';
-const STORAGE_KEY = 'tkd_historial';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Resultados'>;
@@ -27,6 +26,15 @@ type HistorialItem = {
   detalles?: any[];
 };
 
+const getStorageKey = async (): Promise<string> => {
+  const raw = await AsyncStorage.getItem('tkd_usuario');
+  if (raw) {
+    const usuario = JSON.parse(raw);
+    return `tkd_historial_${usuario.id_usuario}`;
+  }
+  return 'tkd_historial_guest';
+};
+
 export default function ResultadosScreen({ navigation, route }: Props) {
   const { score, poomsae, framesCount, guardar, detalles } = route.params;
   const [historial, setHistorial] = useState<HistorialItem[]>([]);
@@ -37,7 +45,8 @@ export default function ResultadosScreen({ navigation, route }: Props) {
 
   const guardarYCargar = async () => {
     try {
-      const raw = await AsyncStorage.getItem(STORAGE_KEY);
+      const key = await getStorageKey();
+      const raw = await AsyncStorage.getItem(key);
       const prev: HistorialItem[] = raw ? JSON.parse(raw) : [];
 
       if (guardar) {
@@ -51,7 +60,7 @@ export default function ResultadosScreen({ navigation, route }: Props) {
           }),
         };
         const actualizado = [nuevo, ...prev];
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(actualizado));
+        await AsyncStorage.setItem(key, JSON.stringify(actualizado));
         setHistorial(actualizado);
       } else {
         setHistorial(prev);
