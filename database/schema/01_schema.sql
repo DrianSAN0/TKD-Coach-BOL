@@ -5,8 +5,11 @@
 -- ══════════════════════════════════════════════════════
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- ── MÓDULO DE USUARIOS ─────────────────────────────────
+-- ── MÓDULO DE USUARIOS (cuentas de la app) ─────────────
+-- Cualquier persona del mundo puede crear una cuenta. No tiene
+-- relación automática con la tabla atleta (ver más abajo).
 
 CREATE TABLE usuario (
     id_usuario        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -33,24 +36,26 @@ CREATE TABLE grado (
     nivel             INTEGER NOT NULL
 );
 
+-- ── MÓDULO DE COMPETIDORES ──────────────────────────────
+-- atleta es el registro de un competidor real (roster de club/
+-- federación), identificado por su carnet de identidad. Lo carga
+-- un administrador/entrenador. id_usuario es un vínculo OPCIONAL
+-- a una cuenta de app — no hay ninguna vinculación automática por
+-- carnet ni de ningún otro tipo; el ranking y las llaves funcionan
+-- enteramente a partir de atleta, tenga o no cuenta de app.
+
 CREATE TABLE atleta (
     id_atleta         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    id_usuario        UUID NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    id_usuario        UUID REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    carnet            VARCHAR(20) UNIQUE NOT NULL,
+    nombre            VARCHAR(100) NOT NULL,
+    apellido          VARCHAR(100) NOT NULL,
     fecha_nacimiento  DATE,
     sexo              VARCHAR(10) CHECK (sexo IN ('masculino', 'femenino')),
     peso              FLOAT,
     categoria         VARCHAR(50),
     id_club           UUID REFERENCES club(id_club),
     grado_actual_id   UUID REFERENCES grado(id_grado),
-    created_at        TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE entrenador (
-    id_entrenador     UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    id_usuario        UUID NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-    id_club           UUID REFERENCES club(id_club),
-    especialidad      VARCHAR(150),
-    certificacion     VARCHAR(150),
     created_at        TIMESTAMP DEFAULT NOW()
 );
 
@@ -113,6 +118,65 @@ CREATE TABLE ranking (
     posicion              INTEGER,
     fecha_actualizacion   TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE pareja (
+    id_pareja            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_atleta_masculino  UUID REFERENCES atleta(id_atleta),
+    id_atleta_femenino   UUID REFERENCES atleta(id_atleta),
+    nombre_pareja        VARCHAR(100),
+    id_club              UUID REFERENCES club(id_club),
+    created_at           TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE competencia_resultado (
+    id_resultado      UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id_evento         UUID NOT NULL REFERENCES evento(id_evento) ON DELETE CASCADE,
+    id_atleta         UUID NOT NULL REFERENCES atleta(id_atleta) ON DELETE CASCADE,
+    modalidad         VARCHAR(20) CHECK (modalidad IN ('poomsae', 'kyorugi')),
+    categoria         VARCHAR(50),
+    peso              VARCHAR(10),
+    posicion_final    INTEGER,
+    puntos_ganados    FLOAT DEFAULT 0,
+    es_ganador        BOOLEAN DEFAULT FALSE,
+    created_at        TIMESTAMP DEFAULT NOW()
+);
+
+-- ── TRIGGER — Recalcular ranking al registrar un resultado ─
+-- Fuente única de verdad para puntaje_acumulado y posicion:
+-- cualquier inserción en competencia_resultado dispara el
+-- recálculo automático del ranking de esa categoría.
+
+CREATE OR REPLACE FUNCTION actualizar_ranking()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $function$
+BEGIN
+    IF EXISTS (SELECT 1 FROM ranking WHERE id_atleta = NEW.id_atleta AND categoria = NEW.categoria) THEN
+        UPDATE ranking
+        SET puntaje_acumulado = puntaje_acumulado + NEW.puntos_ganados,
+            fecha_actualizacion = NOW()
+        WHERE id_atleta = NEW.id_atleta AND categoria = NEW.categoria;
+    ELSE
+        INSERT INTO ranking (id_atleta, categoria, puntaje_acumulado, posicion)
+        VALUES (NEW.id_atleta, NEW.categoria, NEW.puntos_ganados, 0);
+    END IF;
+
+    UPDATE ranking r
+    SET posicion = sub.nueva_pos
+    FROM (
+        SELECT id_ranking,
+               ROW_NUMBER() OVER (PARTITION BY categoria ORDER BY puntaje_acumulado DESC) AS nueva_pos
+        FROM ranking
+    ) sub
+    WHERE r.id_ranking = sub.id_ranking;
+
+    RETURN NEW;
+END;
+$function$;
+
+CREATE TRIGGER trg_actualizar_ranking
+    AFTER INSERT ON competencia_resultado
+    FOR EACH ROW EXECUTE FUNCTION actualizar_ranking();
 
 -- ── SEEDS — Datos iniciales ────────────────────────────
 

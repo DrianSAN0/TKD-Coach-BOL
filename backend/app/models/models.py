@@ -16,7 +16,6 @@ class Usuario(Base):
     estado          = Column(String(20), default='activo')
     created_at      = Column(TIMESTAMP, server_default=func.now())
     atleta          = relationship("Atleta", back_populates="usuario", uselist=False)
-    entrenador      = relationship("Entrenador", back_populates="usuario", uselist=False)
 
 class Club(Base):
     __tablename__ = "club"
@@ -25,7 +24,6 @@ class Club(Base):
     ciudad      = Column(String(100))
     created_at  = Column(TIMESTAMP, server_default=func.now())
     atletas     = relationship("Atleta", back_populates="club")
-    entrenadores= relationship("Entrenador", back_populates="club")
 
 class Grado(Base):
     __tablename__ = "grado"
@@ -38,7 +36,10 @@ class Grado(Base):
 class Atleta(Base):
     __tablename__ = "atleta"
     id_atleta       = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    id_usuario      = Column(UUID(as_uuid=True), ForeignKey("usuario.id_usuario"), nullable=False)
+    id_usuario      = Column(UUID(as_uuid=True), ForeignKey("usuario.id_usuario"))
+    carnet          = Column(String(20), unique=True, nullable=False)
+    nombre          = Column(String(100), nullable=False)
+    apellido        = Column(String(100), nullable=False)
     fecha_nacimiento= Column(Date)
     sexo            = Column(String(10))
     peso            = Column(Float)
@@ -51,17 +52,6 @@ class Atleta(Base):
     grado           = relationship("Grado", back_populates="atletas")
     evaluaciones    = relationship("Evaluacion", back_populates="atleta")
     rankings        = relationship("Ranking", back_populates="atleta")
-
-class Entrenador(Base):
-    __tablename__ = "entrenador"
-    id_entrenador   = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    id_usuario      = Column(UUID(as_uuid=True), ForeignKey("usuario.id_usuario"), nullable=False)
-    id_club         = Column(UUID(as_uuid=True), ForeignKey("club.id_club"))
-    especialidad    = Column(String(150))
-    certificacion   = Column(String(150))
-    created_at      = Column(TIMESTAMP, server_default=func.now())
-    usuario         = relationship("Usuario", back_populates="entrenador")
-    club            = relationship("Club", back_populates="entrenadores")
 
 class Poomsae(Base):
     __tablename__ = "poomsae"

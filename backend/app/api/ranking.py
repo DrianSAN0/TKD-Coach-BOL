@@ -15,10 +15,10 @@ def get_ranking(
 ):
     if modalidad == 'Pareja':
         sql = text("""
-            SELECT 
+            SELECT
                 r.posicion,
-                um.nombre || ' ' || um.apellido as nombre,
-                uf.nombre || ' ' || uf.apellido as nombre_pareja,
+                am.nombre || ' ' || am.apellido as nombre,
+                af.nombre || ' ' || af.apellido as nombre_pareja,
                 c.nombre_club as club,
                 c.ciudad,
                 r.categoria,
@@ -26,8 +26,6 @@ def get_ranking(
             FROM pareja p
             JOIN atleta am ON p.id_atleta_masculino = am.id_atleta
             JOIN atleta af ON p.id_atleta_femenino = af.id_atleta
-            JOIN usuario um ON am.id_usuario = um.id_usuario
-            JOIN usuario uf ON af.id_usuario = uf.id_usuario
             LEFT JOIN club c ON p.id_club = c.id_club
             LEFT JOIN ranking r ON r.id_atleta = am.id_atleta
             WHERE (:categoria IS NULL OR r.categoria = :categoria)
@@ -50,17 +48,16 @@ def get_ranking(
 
     # Individual
     sql = text("""
-        SELECT 
+        SELECT
             r.posicion,
-            u.nombre,
-            u.apellido,
+            a.nombre,
+            a.apellido,
             c.nombre_club as club,
             c.ciudad,
             a.categoria,
             r.puntaje_acumulado
         FROM ranking r
         JOIN atleta a ON r.id_atleta = a.id_atleta
-        JOIN usuario u ON a.id_usuario = u.id_usuario
         LEFT JOIN club c ON a.id_club = c.id_club
         WHERE (:categoria IS NULL OR r.categoria = :categoria)
         ORDER BY r.posicion
