@@ -28,8 +28,8 @@ def get_competidores(
 ):
     query = text("""
         SELECT
-            u.nombre,
-            u.apellido,
+            a.nombre,
+            a.apellido,
             a.peso,
             EXTRACT(YEAR FROM AGE(a.fecha_nacimiento))::int AS edad,
             a.sexo,
@@ -38,9 +38,8 @@ def get_competidores(
             c.ciudad,
             c.ciudad AS departamento
         FROM atleta a
-        JOIN usuario u ON a.id_usuario = u.id_usuario
         LEFT JOIN club c ON a.id_club = c.id_club
-        ORDER BY u.apellido
+        ORDER BY a.apellido
     """)
     rows = db.execute(query).fetchall()
     return [
@@ -66,18 +65,17 @@ def get_competidores_por_peso(
     query = text("""
         SELECT
             a.id_atleta,
-            u.nombre,
-            u.apellido,
+            a.nombre,
+            a.apellido,
             a.peso,
             a.sexo,
             c.nombre_club AS club,
             c.ciudad
         FROM atleta a
-        JOIN usuario u ON a.id_usuario = u.id_usuario
         LEFT JOIN club c ON a.id_club = c.id_club
         WHERE (:peso IS NULL OR a.peso = :peso)
         AND (:sexo IS NULL OR LOWER(a.sexo) = LOWER(:sexo))
-        ORDER BY u.apellido
+        ORDER BY a.apellido
     """)
     rows = db.execute(query, {'peso': peso, 'sexo': sexo}).fetchall()
     return [
