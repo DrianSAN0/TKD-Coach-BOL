@@ -75,7 +75,6 @@ class Evaluacion(Base):
     atleta          = relationship("Atleta", back_populates="evaluaciones")
     poomsae         = relationship("Poomsae", back_populates="evaluaciones")
     detalles        = relationship("DetalleEvaluacion", back_populates="evaluacion")
-    archivos        = relationship("ArchivoAnalisis", back_populates="evaluacion")
 
 class DetalleEvaluacion(Base):
     __tablename__ = "detalle_evaluacion"
@@ -85,15 +84,6 @@ class DetalleEvaluacion(Base):
     puntaje         = Column(Float)
     observacion     = Column(Text)
     evaluacion      = relationship("Evaluacion", back_populates="detalles")
-
-class ArchivoAnalisis(Base):
-    __tablename__ = "archivo_analisis"
-    id_archivo      = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    id_evaluacion   = Column(UUID(as_uuid=True), ForeignKey("evaluacion.id_evaluacion"), nullable=False)
-    url_archivo     = Column(String(255))
-    modelo_usado    = Column(String(100))
-    fecha_subida    = Column(TIMESTAMP, server_default=func.now())
-    evaluacion      = relationship("Evaluacion", back_populates="archivos")
 
 class Evento(Base):
     __tablename__ = "evento"

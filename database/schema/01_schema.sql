@@ -88,14 +88,6 @@ CREATE TABLE detalle_evaluacion (
     observacion       TEXT
 );
 
-CREATE TABLE archivo_analisis (
-    id_archivo        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    id_evaluacion     UUID NOT NULL REFERENCES evaluacion(id_evaluacion) ON DELETE CASCADE,
-    url_archivo       VARCHAR(255),
-    modelo_usado      VARCHAR(100),
-    fecha_subida      TIMESTAMP DEFAULT NOW()
-);
-
 -- ── MÓDULOS COMPLEMENTARIOS ────────────────────────────
 
 CREATE TABLE evento (
