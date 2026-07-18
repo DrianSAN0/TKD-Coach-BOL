@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 router = APIRouter()
 
 # Cargar modelo entrenado
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 MODEL_PATH   = os.path.join(ROOT_DIR, "ai", "models", "poomsae_scorer.pkl")
 ENCODER_PATH = os.path.join(ROOT_DIR, "ai", "models", "label_encoder.pkl")
 
