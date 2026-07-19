@@ -11,6 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { colors } from '../theme/colors';
 import { RootStackParamList, Keypoint } from '../navigation/AppNavigator';
+import { calcularFrameActual, calcularTasaDeteccion, calcularDisplaySize } from '../utils/video';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Analysis'>;
@@ -33,16 +34,10 @@ export default function AnalysisScreen({ navigation, route }: Props) {
   const [videoSize, setVideoSize] = useState({ width: vidW || 1, height: vidH || 1 });
   const [videoError, setVideoError] = useState<string | null>(null);
 
-  const safeWidth = videoSize.width || 1;
-  const safeHeight = videoSize.height || 1;
-  const aspectRatio = safeWidth / safeHeight;
   const videoAreaH = SCREEN_H * 0.62;
-  let displayW = SCREEN_W;
-  let displayH = SCREEN_W / aspectRatio;
-  if (displayH > videoAreaH) {
-    displayH = videoAreaH;
-    displayW = videoAreaH * aspectRatio;
-  }
+  const { width: displayW, height: displayH } = calcularDisplaySize(
+    videoSize.width, videoSize.height, SCREEN_W, videoAreaH
+  );
 
   // Arrancar en el primer frame con detección
   useEffect(() => {
@@ -57,8 +52,7 @@ export default function AnalysisScreen({ navigation, route }: Props) {
       if (!status.isLoaded) return;
       setIsPlaying(status.isPlaying);
       const posMs = status.positionMillis ?? 0;
-      const frameNum = Math.floor((posMs / 1000) * fps);
-      setCurrentFrame(Math.min(frameNum, frames.length - 1));
+      setCurrentFrame(calcularFrameActual(posMs, fps, frames.length));
     },
     [fps, frames.length]
   );
@@ -78,8 +72,7 @@ export default function AnalysisScreen({ navigation, route }: Props) {
 
   const keypoints: Keypoint[] = frames[currentFrame]?.keypoints ?? [];
   const hasDetection = keypoints.length > 0;
-  const detectedFrames = frames.filter(f => f.keypoints.length > 0).length;
-  const detectionRate = Math.round((detectedFrames / frames.length) * 100);
+  const detectionRate = calcularTasaDeteccion(frames);
 
   return (
     <View style={s.container}>

@@ -7,6 +7,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { validarRegistro } from '../utils/validacion';
 
 const BACKEND_URL = 'http://10.0.2.2:8000';
 
@@ -25,16 +26,9 @@ export default function RegisterScreen({ navigation }: Props) {
   const [aceptado,    setAceptado]    = useState(false);
 
   const handleRegister = async () => {
-    if (!nombre || !apellido || !correo || !contrasena || !confirmar) {
-      Alert.alert('Error', 'Completá todos los campos');
-      return;
-    }
-    if (contrasena !== confirmar) {
-      Alert.alert('Error', 'Las contraseñas no coinciden');
-      return;
-    }
-    if (!aceptado) {
-      Alert.alert('Error', 'Debés aceptar los términos y condiciones');
+    const errorValidacion = validarRegistro({ nombre, apellido, correo, contrasena, confirmar, aceptado });
+    if (errorValidacion) {
+      Alert.alert('Error', errorValidacion);
       return;
     }
     setLoading(true);

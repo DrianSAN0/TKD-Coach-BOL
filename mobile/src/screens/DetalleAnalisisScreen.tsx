@@ -8,6 +8,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavBar from '../components/BottomNavBar';
+import { getScoreColorDetalle, getIcon, calcularDeducciones } from '../utils/analisis';
 
 const TEAL = '#5BBEBB';
 const RED  = '#E93735';
@@ -26,30 +27,13 @@ const REGLAS_WT = [
   { criterio: 'Expresión de energía',peso: 0.2, descripcion: 'Falta de Ki-hap o potencia en movimientos' },
 ];
 
-const getColor = (score: number) => {
-  if (score >= 8.5) return '#4ADE80';
-  if (score >= 7.0) return '#F0C040';
-  if (score >= 5.0) return '#FB923C';
-  return RED;
-};
-
-const getIcon = (obs: string) => {
-  if (obs === 'Excelente') return 'checkmark-circle';
-  if (obs === 'Bien') return 'checkmark-circle-outline';
-  if (obs === 'Aceptable') return 'warning-outline';
-  return 'close-circle';
-};
-
 export default function DetalleAnalisisScreen({ navigation, route }: Props) {
   const { item } = route.params;
   const detalles = item.detalles || [];
-  const scoreColor = getColor(item.score);
+  const scoreColor = getScoreColorDetalle(item.score);
 
   // Calcular deducciones por segmento
-  const deducciones = detalles.filter((d: any) => d.puntuacion < 7.0);
-  const puntosDescontados = detalles.reduce((acc: number, d: any) => {
-    return acc + (d.puntuacion < 7.0 ? (7.0 - d.puntuacion) * 0.3 : 0);
-  }, 0);
+  const { deducciones, puntosDescontados } = calcularDeducciones(detalles);
 
   return (
     <SafeAreaView style={s.container}>

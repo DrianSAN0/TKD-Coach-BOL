@@ -9,6 +9,7 @@ import { RouteProp } from '@react-navigation/native';
 import { colors } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavBar from '../components/BottomNavBar';
+import { medalColor } from '../utils/ranking';
 
 const BACKEND_URL = 'http://10.0.2.2:8000';
 const TEAL = '#5BBEBB';
@@ -27,13 +28,6 @@ type Competidor = {
   ciudad:            string | null;
   categoria:         string | null;
   puntaje_acumulado: number;
-};
-
-const medalColor = (pos: number) => {
-  if (pos === 1) return '#FFD700';
-  if (pos === 2) return '#C0C0C0';
-  if (pos === 3) return '#CD7F32';
-  return colors.textSecondary;
 };
 
 export default function RankingTablaScreen({ navigation, route }: Props) {
