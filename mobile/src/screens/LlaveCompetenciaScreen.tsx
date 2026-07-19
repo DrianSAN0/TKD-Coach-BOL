@@ -9,6 +9,7 @@ import { RouteProp } from '@react-navigation/native';
 import { colors } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavBar from '../components/BottomNavBar';
+import { crearBracket, seleccionarGanador as aplicarGanador, getRondaLabel, calcularPodio } from '../utils/bracket';
 
 const BACKEND_URL = 'http://10.0.2.2:8000';
 const TEAL = '#5BBEBB';
@@ -17,8 +18,6 @@ const LINEA = '#444';
 const CARD_H = 42;
 const CARD_W = 150;
 const GAP = 8;
-
-const nextPow2 = (n: number) => { let p = 1; while (p < n) p *= 2; return p; };
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'LlaveCompetencia'>;
@@ -123,67 +122,18 @@ export default function LlaveCompetenciaScreen({ navigation, route }: Props) {
   };
 
   const inicializarBracket = (comps: Comp[]) => {
-    if (comps.length === 0) { setRondas([]); return; }
-    const size = nextPow2(comps.length);
-    const seeds = [...comps, ...Array(size - comps.length).fill(null)];
-    const partidos: Partido[] = [];
-    for (let i = 0; i < seeds.length; i += 2) {
-      const izq = seeds[i], der = seeds[i + 1];
-      const ganador = der === null ? izq : izq === null ? der : null;
-      partidos.push({ izq, der, ganador });
-    }
-    const todasRondas: Partido[][] = [partidos];
-    let n = partidos.length;
-    while (n > 1) {
-      n = Math.ceil(n / 2);
-      todasRondas.push(Array(n).fill(null).map(() => ({ izq: null, der: null, ganador: null })));
-    }
-    setRondas(todasRondas);
+    setRondas(crearBracket(comps));
   };
 
   const seleccionarGanador = (rondaIdx: number, partidoIdx: number, ganador: Comp) => {
-    const nr = rondas.map(r => r.map(p => ({ ...p })));
-    const perdedor = nr[rondaIdx][partidoIdx].izq === ganador
-      ? nr[rondaIdx][partidoIdx].der
-      : nr[rondaIdx][partidoIdx].izq;
-
     // Detectar semifinal (penúltima ronda) para 3er lugar
     if (rondaIdx === rondas.length - 2) {
       setTercero(null); // reset al cambiar semi
     }
-
-    nr[rondaIdx][partidoIdx].ganador = ganador;
-    if (rondaIdx + 1 < nr.length) {
-      const sig = Math.floor(partidoIdx / 2);
-      if (partidoIdx % 2 === 0) nr[rondaIdx + 1][sig].izq = ganador;
-      else nr[rondaIdx + 1][sig].der = ganador;
-      nr[rondaIdx + 1][sig].ganador = null;
-    }
-    setRondas(nr);
+    setRondas(aplicarGanador(rondas, rondaIdx, partidoIdx, ganador));
   };
 
-  const getRondaLabel = (idx: number, total: number) => {
-    const fromEnd = total - 1 - idx;
-    if (fromEnd === 0) return 'Final';
-    if (fromEnd === 1) return 'Semifinal';
-    if (fromEnd === 2) return 'Cuartos';
-    if (fromEnd === 3) return 'Octavos';
-    return `Ronda ${idx + 1}`;
-  };
-
-  const campeon = rondas.length > 0 ? rondas[rondas.length - 1]?.[0]?.ganador : null;
-  const subcampeon = rondas.length > 0
-    ? (rondas[rondas.length - 1]?.[0]?.izq === campeon
-      ? rondas[rondas.length - 1]?.[0]?.der
-      : rondas[rondas.length - 1]?.[0]?.izq)
-    : null;
-
-  // Perdedores de semifinal = 3er lugar
-  const perdedoresSemi = rondas.length >= 2
-    ? rondas[rondas.length - 2].map(p =>
-        p.ganador === p.izq ? p.der : p.ganador === p.der ? p.izq : null
-      ).filter(Boolean)
-    : [];
+  const { campeon, subcampeon, terceros: perdedoresSemi } = calcularPodio(rondas);
 
   const actualizarRanking = async () => {
     if (!campeon || !subcampeon) return;

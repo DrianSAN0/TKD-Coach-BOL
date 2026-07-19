@@ -9,6 +9,7 @@ import { RouteProp } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavBar from '../components/BottomNavBar';
+import { getScoreColorResultado } from '../utils/analisis';
 
 const TEAL = '#5BBEBB';
 const RED  = '#E93735';
@@ -70,7 +71,7 @@ export default function ResultadosScreen({ navigation, route }: Props) {
     }
   };
 
-  const scoreColor = score >= 8.5 ? TEAL : score >= 7 ? '#F0C040' : RED;
+  const scoreColor = getScoreColorResultado(score);
 
   return (
     <SafeAreaView style={s.container}>
